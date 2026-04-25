@@ -6,83 +6,38 @@ import { Button } from './components/ui/Button';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
-import { mockProjects } from './data/mock';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, TimeRange } from './types';
 import { extractProjectName, normalizeUrl, slugify } from './utils';
 
-function createSeries(seed: number) {
-  const make = (length: number, baseUptime: number, baseResponse: number) =>
-    Array.from({ length }, (_, index) => ({
-      label: `${index + 1}`,
-      uptime: Math.max(80, Math.min(100, baseUptime + ((index + seed) % 4) - (index % 5 === 0 ? 2 : 0))),
-      response: Math.max(90, Math.min(1200, baseResponse + seed * 14 + index * 10 + (index % 3) * 16)),
-    }));
+// Production implementation notes:
+// - Replace mock data generators with API calls to fetch real metrics
+// - Use WebSockets or polling for real-time status updates
+// - Implement proper error handling and retry logic
+// - See /api/README.md for backend API documentation
 
-  return {
-    '24h': make(12, 95, 160),
-    '7d': make(7, 97, 175),
-    '30d': make(10, 98, 165),
-  } satisfies Project['uptimeSeries'];
-}
-
-function createLogs(name: string, status: MonitorStatus) {
-  return [
-    {
-      id: `${name}-log-1`,
-      type: 'up' as const,
-      message: `${name} responded normally`,
-      timestamp: 'Just now',
-      details: 'Health check returned 200 OK in 112ms.',
-    },
-    {
-      id: `${name}-log-2`,
-      type: status,
-      message: status === 'down' ? 'Site DOWN (timeout)' : status === 'slow' ? 'Site SLOW (latency spike)' : 'Site UP',
-      timestamp: '7 min ago',
-      details:
-        status === 'down'
-          ? 'Request timed out after the configured threshold.'
-          : 'Response times recovered after a brief congestion window.',
-    },
-    {
-      id: `${name}-log-3`,
-      type: 'up' as const,
-      message: 'Monitoring cycle completed',
-      timestamp: '19 min ago',
-      details: 'Next interval is queued and ready.',
-    },
-  ];
-}
-
-function createMiniSeries(seed: number) {
-  return Array.from({ length: 12 }, (_, index) => ({
-    label: `${index}`,
-    value: Math.max(78, Math.min(100, 92 + ((index + seed) % 4) - (index % 5 === 0 ? 2 : 0))),
-  }));
-}
-
-function buildProject(values: ProjectFormValues, status: MonitorStatus): Project {
+function buildProject(values: ProjectFormValues): Project {
   const id = slugify(values.name || extractProjectName(values.url)) || `project-${Date.now()}`;
   const seed = id.length + values.interval;
   const safeName = values.name.trim() || extractProjectName(values.url);
   const url = normalizeUrl(values.url);
 
+  // In production, this should POST to /api/projects
   return {
     id,
     name: safeName,
     url,
-    status,
-    responseTime: status === 'down' ? 0 : status === 'slow' ? 790 : 142 + seed,
-    lastChecked: 'Just now',
+    status: 'up',
+    responseTime: 0,
+    lastChecked: 'Pending...',
     interval: values.interval,
     email: values.email,
     alertsEnabled: true,
     keepAlive: false,
-    tags: ['Custom', 'New'],
-    uptimeSeries: createSeries(seed),
-    responseSeries: createSeries(seed + 1),
-    miniSeries: createMiniSeries(seed),
-    logs: createLogs(safeName, status),
+    tags: ['Custom'],
+    uptimeSeries: { '24h': [], '7d': [], '30d': [] },
+    responseSeries: { '24h': [], '7d': [], '30d': [] },
+    miniSeries: [],
+    logs: [],
   };
 }
 
@@ -95,9 +50,9 @@ const defaultForm: ProjectFormValues = {
 
 export default function App() {
   const [view, setView] = useState<PageView>('dashboard');
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
-  const [loading, setLoading] = useState(true);
-  const [selectedProjectId, setSelectedProjectId] = useState(mockProjects[0]?.id ?? '');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [range, setRange] = useState<TimeRange>('24h');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<MonitorStatus | 'all'>('all');
@@ -105,10 +60,21 @@ export default function App() {
   const [formValues, setFormValues] = useState<ProjectFormValues>(defaultForm);
   const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setLoading(false), 900);
-    return () => window.clearTimeout(timer);
-  }, []);
+  // Initialize projects from API endpoint in production
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+  //     try {
+  //       const response = await fetch('/api/projects');
+  //       const data = await response.json();
+  //       setProjects(data);
+  //     } catch (error) {
+  //       console.error('Failed to fetch projects:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchProjects();
+  // }, []);
 
   useEffect(() => {
     if (view === 'details' && selectedProjectId && !projects.some((project) => project.id === selectedProjectId)) {
@@ -148,8 +114,7 @@ export default function App() {
     if (!formValues.url.trim()) return;
     const normalizedUrl = normalizeUrl(formValues.url);
     const nextName = formValues.name.trim() || extractProjectName(normalizedUrl);
-    const status: MonitorStatus = testStatus === 'error' ? 'slow' : 'up';
-    const created = buildProject({ ...formValues, url: normalizedUrl, name: nextName }, status);
+    const created = buildProject({ ...formValues, url: normalizedUrl, name: nextName });
     setProjects((current) => [created, ...current]);
     setSelectedProjectId(created.id);
     setModalOpen(false);
