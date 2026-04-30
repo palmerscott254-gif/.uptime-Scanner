@@ -210,14 +210,42 @@ function getProjectById(projects, id) {
   return projects.find((project) => project.id === id);
 }
 
-function isUrlReachable(url) {
+async function probeUrl(url) {
   const normalized = normalizeUrl(url);
-  return /^https?:\/\//i.test(normalized) && !/offline|down|fail/i.test(normalized);
-}
+  if (!/^https?:\/\//i.test(normalized)) {
+    return { reachable: false, statusCode: 0, responseTime: null };
+  }
 
-function responseTimeFromUrl(url) {
-  const seed = normalizeUrl(url).length;
-  return Math.max(90, Math.min(900, 120 + seed * 3));
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const start = Date.now();
+
+  try {
+    let response = await fetch(normalized, {
+      method: 'HEAD',
+      redirect: 'follow',
+      signal: controller.signal,
+    });
+
+    if (response.status === 405 || response.status === 501) {
+      response = await fetch(normalized, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: controller.signal,
+      });
+    }
+
+    const responseTime = Date.now() - start;
+    return {
+      reachable: response.ok,
+      statusCode: response.status,
+      responseTime,
+    };
+  } catch {
+    return { reachable: false, statusCode: 0, responseTime: null };
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -269,11 +297,11 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && pathname === '/api/projects/test') {
       const body = await parseBody(req);
-      const reachable = isUrlReachable(body?.url);
+      const result = await probeUrl(body?.url);
       sendJson(res, 200, {
-        reachable,
-        statusCode: reachable ? 200 : 0,
-        responseTime: reachable ? responseTimeFromUrl(body?.url) : null,
+        reachable: result.reachable,
+        statusCode: result.statusCode,
+        responseTime: result.responseTime,
         timestamp: new Date().toISOString(),
       });
       return;
