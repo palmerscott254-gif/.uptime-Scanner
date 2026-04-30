@@ -7,39 +7,15 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, TimeRange } from './types';
-import { extractProjectName, normalizeUrl, slugify } from './utils';
+import { extractProjectName, normalizeUrl } from './utils';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 // Production implementation notes:
 // - Replace mock data generators with API calls to fetch real metrics
 // - Use WebSockets or polling for real-time status updates
 // - Implement proper error handling and retry logic
 // - See /api/README.md for backend API documentation
-
-function buildProject(values: ProjectFormValues): Project {
-  const id = slugify(values.name || extractProjectName(values.url)) || `project-${Date.now()}`;
-  const seed = id.length + values.interval;
-  const safeName = values.name.trim() || extractProjectName(values.url);
-  const url = normalizeUrl(values.url);
-
-  // In production, this should POST to /api/projects
-  return {
-    id,
-    name: safeName,
-    url,
-    status: 'up',
-    responseTime: 0,
-    lastChecked: 'Pending...',
-    interval: values.interval,
-    email: values.email,
-    alertsEnabled: true,
-    keepAlive: false,
-    tags: ['Custom'],
-    uptimeSeries: { '24h': [], '7d': [], '30d': [] },
-    responseSeries: { '24h': [], '7d': [], '30d': [] },
-    miniSeries: [],
-    logs: [],
-  };
-}
 
 const defaultForm: ProjectFormValues = {
   url: '',
@@ -51,7 +27,7 @@ const defaultForm: ProjectFormValues = {
 export default function App() {
   const [view, setView] = useState<PageView>('dashboard');
   const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [range, setRange] = useState<TimeRange>('24h');
   const [search, setSearch] = useState('');
@@ -60,27 +36,36 @@ export default function App() {
   const [formValues, setFormValues] = useState<ProjectFormValues>(defaultForm);
   const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  // Initialize projects from API endpoint in production
-  // useEffect(() => {
-  //   const fetchProjects = async () => {
-  //     try {
-  //       const response = await fetch('/api/projects');
-  //       const data = await response.json();
-  //       setProjects(data);
-  //     } catch (error) {
-  //       console.error('Failed to fetch projects:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchProjects();
-  // }, []);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/projects`);
+        const data = (await response.json()) as { data?: Project[] } | Project[];
+        const nextProjects = Array.isArray(data) ? data : data.data ?? [];
+        setProjects(nextProjects);
+        setSelectedProjectId((current) => current || nextProjects[0]?.id || '');
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   useEffect(() => {
-    if (view === 'details' && selectedProjectId && !projects.some((project) => project.id === selectedProjectId)) {
+    if (selectedProjectId && !projects.some((project) => project.id === selectedProjectId)) {
       setSelectedProjectId(projects[0]?.id ?? '');
     }
-  }, [projects, selectedProjectId, view]);
+  }, [projects, selectedProjectId]);
+
+  useEffect(() => {
+    if (!selectedProjectId && projects[0]?.id) {
+      setSelectedProjectId(projects[0].id);
+    }
+  }, [projects, selectedProjectId]);
 
   const selectedProject = useMemo(
     () => projects.find((project) => project.id === selectedProjectId) ?? projects[0],
@@ -98,29 +83,60 @@ export default function App() {
     setFormValues({ ...next, name: nextName });
   };
 
-  const handleTestUrl = () => {
+  const handleTestUrl = async () => {
     setTestStatus('loading');
-    window.setTimeout(() => {
-      const normalized = normalizeUrl(formValues.url);
-      const isReachable = /^https?:\/\//i.test(normalized) && !/offline|down|fail/i.test(normalized);
-      setTestStatus(isReachable ? 'success' : 'error');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/projects/test`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: formValues.url }),
+      });
+
+      const result = (await response.json()) as { reachable?: boolean };
+      setTestStatus(result.reachable ? 'success' : 'error');
       if (!formValues.name.trim()) {
         setFormValues((current) => ({ ...current, name: extractProjectName(current.url) }));
       }
-    }, 800);
+    } catch (error) {
+      console.error('Failed to test URL:', error);
+      setTestStatus('error');
+    }
   };
 
-  const handleCreateProject = () => {
+  const handleCreateProject = async () => {
     if (!formValues.url.trim()) return;
     const normalizedUrl = normalizeUrl(formValues.url);
     const nextName = formValues.name.trim() || extractProjectName(normalizedUrl);
-    const created = buildProject({ ...formValues, url: normalizedUrl, name: nextName });
-    setProjects((current) => [created, ...current]);
-    setSelectedProjectId(created.id);
-    setModalOpen(false);
-    setView('dashboard');
-    setTestStatus('idle');
-    setFormValues(defaultForm);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: normalizedUrl,
+          name: nextName,
+          interval: formValues.interval,
+          email: formValues.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create project: ${response.status}`);
+      }
+
+      const payload = (await response.json()) as { data?: Project } | Project;
+      const created = 'data' in payload ? payload.data : payload;
+      if (!created || !('id' in created)) return;
+
+      setProjects((current) => [created, ...current]);
+      setSelectedProjectId(created.id);
+      setModalOpen(false);
+      setView('dashboard');
+      setTestStatus('idle');
+      setFormValues(defaultForm);
+    } catch (error) {
+      console.error('Failed to create project:', error);
+    }
   };
 
   const handleViewProject = (project: Project) => {

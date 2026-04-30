@@ -1,0 +1,1977 @@
+[
+  {
+    "id": "nebula-commerce",
+    "name": "Nebula Commerce",
+    "url": "https://nebula-commerce.example.com",
+    "status": "up",
+    "responseTime": 184,
+    "lastChecked": "30 seconds ago",
+    "interval": 1,
+    "email": "ops@nebula.com",
+    "alertsEnabled": true,
+    "keepAlive": true,
+    "tags": [
+      "Storefront",
+      "API"
+    ],
+    "uptimeSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 94,
+          "response": 174
+        },
+        {
+          "label": "2",
+          "uptime": 97,
+          "response": 200
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 226
+        },
+        {
+          "label": "4",
+          "uptime": 95,
+          "response": 204
+        },
+        {
+          "label": "5",
+          "uptime": 96,
+          "response": 230
+        },
+        {
+          "label": "6",
+          "uptime": 95,
+          "response": 256
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 234
+        },
+        {
+          "label": "8",
+          "uptime": 95,
+          "response": 260
+        },
+        {
+          "label": "9",
+          "uptime": 96,
+          "response": 286
+        },
+        {
+          "label": "10",
+          "uptime": 97,
+          "response": 264
+        },
+        {
+          "label": "11",
+          "uptime": 96,
+          "response": 290
+        },
+        {
+          "label": "12",
+          "uptime": 95,
+          "response": 316
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 189
+        },
+        {
+          "label": "2",
+          "uptime": 99,
+          "response": 215
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 241
+        },
+        {
+          "label": "4",
+          "uptime": 97,
+          "response": 219
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 245
+        },
+        {
+          "label": "6",
+          "uptime": 97,
+          "response": 271
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 249
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 97,
+          "response": 179
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 205
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 231
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 209
+        },
+        {
+          "label": "5",
+          "uptime": 99,
+          "response": 235
+        },
+        {
+          "label": "6",
+          "uptime": 98,
+          "response": 261
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 239
+        },
+        {
+          "label": "8",
+          "uptime": 98,
+          "response": 265
+        },
+        {
+          "label": "9",
+          "uptime": 99,
+          "response": 291
+        },
+        {
+          "label": "10",
+          "uptime": 100,
+          "response": 269
+        }
+      ]
+    },
+    "responseSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 95,
+          "response": 188
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 214
+        },
+        {
+          "label": "3",
+          "uptime": 95,
+          "response": 240
+        },
+        {
+          "label": "4",
+          "uptime": 96,
+          "response": 218
+        },
+        {
+          "label": "5",
+          "uptime": 97,
+          "response": 244
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 270
+        },
+        {
+          "label": "7",
+          "uptime": 95,
+          "response": 248
+        },
+        {
+          "label": "8",
+          "uptime": 96,
+          "response": 274
+        },
+        {
+          "label": "9",
+          "uptime": 97,
+          "response": 300
+        },
+        {
+          "label": "10",
+          "uptime": 98,
+          "response": 278
+        },
+        {
+          "label": "11",
+          "uptime": 93,
+          "response": 304
+        },
+        {
+          "label": "12",
+          "uptime": 96,
+          "response": 330
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 97,
+          "response": 203
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 229
+        },
+        {
+          "label": "3",
+          "uptime": 97,
+          "response": 255
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 233
+        },
+        {
+          "label": "5",
+          "uptime": 99,
+          "response": 259
+        },
+        {
+          "label": "6",
+          "uptime": 98,
+          "response": 285
+        },
+        {
+          "label": "7",
+          "uptime": 97,
+          "response": 263
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 98,
+          "response": 193
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 219
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 245
+        },
+        {
+          "label": "4",
+          "uptime": 99,
+          "response": 223
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 249
+        },
+        {
+          "label": "6",
+          "uptime": 99,
+          "response": 275
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 253
+        },
+        {
+          "label": "8",
+          "uptime": 99,
+          "response": 279
+        },
+        {
+          "label": "9",
+          "uptime": 100,
+          "response": 305
+        },
+        {
+          "label": "10",
+          "uptime": 100,
+          "response": 283
+        }
+      ]
+    },
+    "miniSeries": [
+      {
+        "label": "0",
+        "value": 91
+      },
+      {
+        "label": "1",
+        "value": 94
+      },
+      {
+        "label": "2",
+        "value": 95
+      },
+      {
+        "label": "3",
+        "value": 92
+      },
+      {
+        "label": "4",
+        "value": 93
+      },
+      {
+        "label": "5",
+        "value": 92
+      },
+      {
+        "label": "6",
+        "value": 95
+      },
+      {
+        "label": "7",
+        "value": 92
+      },
+      {
+        "label": "8",
+        "value": 93
+      },
+      {
+        "label": "9",
+        "value": 94
+      },
+      {
+        "label": "10",
+        "value": 93
+      },
+      {
+        "label": "11",
+        "value": 92
+      }
+    ],
+    "logs": [
+      {
+        "id": "Nebula Commerce-log-1",
+        "type": "up",
+        "message": "Nebula Commerce responded normally",
+        "timestamp": "Just now",
+        "details": "Health check returned 200 OK in 112ms."
+      },
+      {
+        "id": "Nebula Commerce-log-2",
+        "type": "up",
+        "message": "Site UP",
+        "timestamp": "7 min ago",
+        "details": "Response times recovered after a brief congestion window."
+      },
+      {
+        "id": "Nebula Commerce-log-3",
+        "type": "up",
+        "message": "Monitoring cycle completed",
+        "timestamp": "19 min ago",
+        "details": "Next interval is queued and ready."
+      }
+    ]
+  },
+  {
+    "id": "pulse-api",
+    "name": "Pulse API",
+    "url": "https://pulse-api.example.com",
+    "status": "slow",
+    "responseTime": 864,
+    "lastChecked": "2 minutes ago",
+    "interval": 5,
+    "email": "alerts@pulse.dev",
+    "alertsEnabled": true,
+    "keepAlive": false,
+    "tags": [
+      "API",
+      "Backend"
+    ],
+    "uptimeSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 95,
+          "response": 188
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 214
+        },
+        {
+          "label": "3",
+          "uptime": 95,
+          "response": 240
+        },
+        {
+          "label": "4",
+          "uptime": 96,
+          "response": 218
+        },
+        {
+          "label": "5",
+          "uptime": 97,
+          "response": 244
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 270
+        },
+        {
+          "label": "7",
+          "uptime": 95,
+          "response": 248
+        },
+        {
+          "label": "8",
+          "uptime": 96,
+          "response": 274
+        },
+        {
+          "label": "9",
+          "uptime": 97,
+          "response": 300
+        },
+        {
+          "label": "10",
+          "uptime": 98,
+          "response": 278
+        },
+        {
+          "label": "11",
+          "uptime": 93,
+          "response": 304
+        },
+        {
+          "label": "12",
+          "uptime": 96,
+          "response": 330
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 97,
+          "response": 203
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 229
+        },
+        {
+          "label": "3",
+          "uptime": 97,
+          "response": 255
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 233
+        },
+        {
+          "label": "5",
+          "uptime": 99,
+          "response": 259
+        },
+        {
+          "label": "6",
+          "uptime": 98,
+          "response": 285
+        },
+        {
+          "label": "7",
+          "uptime": 97,
+          "response": 263
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 98,
+          "response": 193
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 219
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 245
+        },
+        {
+          "label": "4",
+          "uptime": 99,
+          "response": 223
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 249
+        },
+        {
+          "label": "6",
+          "uptime": 99,
+          "response": 275
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 253
+        },
+        {
+          "label": "8",
+          "uptime": 99,
+          "response": 279
+        },
+        {
+          "label": "9",
+          "uptime": 100,
+          "response": 305
+        },
+        {
+          "label": "10",
+          "uptime": 100,
+          "response": 283
+        }
+      ]
+    },
+    "responseSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 202
+        },
+        {
+          "label": "2",
+          "uptime": 95,
+          "response": 228
+        },
+        {
+          "label": "3",
+          "uptime": 96,
+          "response": 254
+        },
+        {
+          "label": "4",
+          "uptime": 97,
+          "response": 232
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 258
+        },
+        {
+          "label": "6",
+          "uptime": 93,
+          "response": 284
+        },
+        {
+          "label": "7",
+          "uptime": 96,
+          "response": 262
+        },
+        {
+          "label": "8",
+          "uptime": 97,
+          "response": 288
+        },
+        {
+          "label": "9",
+          "uptime": 98,
+          "response": 314
+        },
+        {
+          "label": "10",
+          "uptime": 95,
+          "response": 292
+        },
+        {
+          "label": "11",
+          "uptime": 94,
+          "response": 318
+        },
+        {
+          "label": "12",
+          "uptime": 97,
+          "response": 344
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 98,
+          "response": 217
+        },
+        {
+          "label": "2",
+          "uptime": 97,
+          "response": 243
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 269
+        },
+        {
+          "label": "4",
+          "uptime": 99,
+          "response": 247
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 273
+        },
+        {
+          "label": "6",
+          "uptime": 95,
+          "response": 299
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 277
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 99,
+          "response": 207
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 233
+        },
+        {
+          "label": "3",
+          "uptime": 99,
+          "response": 259
+        },
+        {
+          "label": "4",
+          "uptime": 100,
+          "response": 237
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 263
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 289
+        },
+        {
+          "label": "7",
+          "uptime": 99,
+          "response": 267
+        },
+        {
+          "label": "8",
+          "uptime": 100,
+          "response": 293
+        },
+        {
+          "label": "9",
+          "uptime": 100,
+          "response": 319
+        },
+        {
+          "label": "10",
+          "uptime": 98,
+          "response": 297
+        }
+      ]
+    },
+    "miniSeries": [
+      {
+        "label": "0",
+        "value": 92
+      },
+      {
+        "label": "1",
+        "value": 95
+      },
+      {
+        "label": "2",
+        "value": 92
+      },
+      {
+        "label": "3",
+        "value": 93
+      },
+      {
+        "label": "4",
+        "value": 94
+      },
+      {
+        "label": "5",
+        "value": 93
+      },
+      {
+        "label": "6",
+        "value": 92
+      },
+      {
+        "label": "7",
+        "value": 93
+      },
+      {
+        "label": "8",
+        "value": 94
+      },
+      {
+        "label": "9",
+        "value": 95
+      },
+      {
+        "label": "10",
+        "value": 90
+      },
+      {
+        "label": "11",
+        "value": 93
+      }
+    ],
+    "logs": [
+      {
+        "id": "Pulse API-log-1",
+        "type": "up",
+        "message": "Pulse API responded normally",
+        "timestamp": "Just now",
+        "details": "Health check returned 200 OK in 112ms."
+      },
+      {
+        "id": "Pulse API-log-2",
+        "type": "slow",
+        "message": "Site SLOW (latency spike)",
+        "timestamp": "7 min ago",
+        "details": "Response times recovered after a brief congestion window."
+      },
+      {
+        "id": "Pulse API-log-3",
+        "type": "up",
+        "message": "Monitoring cycle completed",
+        "timestamp": "19 min ago",
+        "details": "Next interval is queued and ready."
+      }
+    ]
+  },
+  {
+    "id": "flux-frontend",
+    "name": "Flux Frontend",
+    "url": "https://flux-frontend.example.com",
+    "status": "up",
+    "responseTime": 122,
+    "lastChecked": "12 seconds ago",
+    "interval": 1,
+    "email": "team@flux.dev",
+    "alertsEnabled": false,
+    "keepAlive": true,
+    "tags": [
+      "Frontend",
+      "CDN"
+    ],
+    "uptimeSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 202
+        },
+        {
+          "label": "2",
+          "uptime": 95,
+          "response": 228
+        },
+        {
+          "label": "3",
+          "uptime": 96,
+          "response": 254
+        },
+        {
+          "label": "4",
+          "uptime": 97,
+          "response": 232
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 258
+        },
+        {
+          "label": "6",
+          "uptime": 93,
+          "response": 284
+        },
+        {
+          "label": "7",
+          "uptime": 96,
+          "response": 262
+        },
+        {
+          "label": "8",
+          "uptime": 97,
+          "response": 288
+        },
+        {
+          "label": "9",
+          "uptime": 98,
+          "response": 314
+        },
+        {
+          "label": "10",
+          "uptime": 95,
+          "response": 292
+        },
+        {
+          "label": "11",
+          "uptime": 94,
+          "response": 318
+        },
+        {
+          "label": "12",
+          "uptime": 97,
+          "response": 344
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 98,
+          "response": 217
+        },
+        {
+          "label": "2",
+          "uptime": 97,
+          "response": 243
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 269
+        },
+        {
+          "label": "4",
+          "uptime": 99,
+          "response": 247
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 273
+        },
+        {
+          "label": "6",
+          "uptime": 95,
+          "response": 299
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 277
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 99,
+          "response": 207
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 233
+        },
+        {
+          "label": "3",
+          "uptime": 99,
+          "response": 259
+        },
+        {
+          "label": "4",
+          "uptime": 100,
+          "response": 237
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 263
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 289
+        },
+        {
+          "label": "7",
+          "uptime": 99,
+          "response": 267
+        },
+        {
+          "label": "8",
+          "uptime": 100,
+          "response": 293
+        },
+        {
+          "label": "9",
+          "uptime": 100,
+          "response": 319
+        },
+        {
+          "label": "10",
+          "uptime": 98,
+          "response": 297
+        }
+      ]
+    },
+    "responseSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 93,
+          "response": 216
+        },
+        {
+          "label": "2",
+          "uptime": 96,
+          "response": 242
+        },
+        {
+          "label": "3",
+          "uptime": 97,
+          "response": 268
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 246
+        },
+        {
+          "label": "5",
+          "uptime": 95,
+          "response": 272
+        },
+        {
+          "label": "6",
+          "uptime": 94,
+          "response": 298
+        },
+        {
+          "label": "7",
+          "uptime": 97,
+          "response": 276
+        },
+        {
+          "label": "8",
+          "uptime": 98,
+          "response": 302
+        },
+        {
+          "label": "9",
+          "uptime": 95,
+          "response": 328
+        },
+        {
+          "label": "10",
+          "uptime": 96,
+          "response": 306
+        },
+        {
+          "label": "11",
+          "uptime": 95,
+          "response": 332
+        },
+        {
+          "label": "12",
+          "uptime": 98,
+          "response": 358
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 95,
+          "response": 231
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 257
+        },
+        {
+          "label": "3",
+          "uptime": 99,
+          "response": 283
+        },
+        {
+          "label": "4",
+          "uptime": 100,
+          "response": 261
+        },
+        {
+          "label": "5",
+          "uptime": 97,
+          "response": 287
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 313
+        },
+        {
+          "label": "7",
+          "uptime": 99,
+          "response": 291
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 221
+        },
+        {
+          "label": "2",
+          "uptime": 99,
+          "response": 247
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 273
+        },
+        {
+          "label": "4",
+          "uptime": 100,
+          "response": 251
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 277
+        },
+        {
+          "label": "6",
+          "uptime": 97,
+          "response": 303
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 281
+        },
+        {
+          "label": "8",
+          "uptime": 100,
+          "response": 307
+        },
+        {
+          "label": "9",
+          "uptime": 98,
+          "response": 333
+        },
+        {
+          "label": "10",
+          "uptime": 99,
+          "response": 311
+        }
+      ]
+    },
+    "miniSeries": [
+      {
+        "label": "0",
+        "value": 93
+      },
+      {
+        "label": "1",
+        "value": 92
+      },
+      {
+        "label": "2",
+        "value": 93
+      },
+      {
+        "label": "3",
+        "value": 94
+      },
+      {
+        "label": "4",
+        "value": 95
+      },
+      {
+        "label": "5",
+        "value": 90
+      },
+      {
+        "label": "6",
+        "value": 93
+      },
+      {
+        "label": "7",
+        "value": 94
+      },
+      {
+        "label": "8",
+        "value": 95
+      },
+      {
+        "label": "9",
+        "value": 92
+      },
+      {
+        "label": "10",
+        "value": 91
+      },
+      {
+        "label": "11",
+        "value": 94
+      }
+    ],
+    "logs": [
+      {
+        "id": "Flux Frontend-log-1",
+        "type": "up",
+        "message": "Flux Frontend responded normally",
+        "timestamp": "Just now",
+        "details": "Health check returned 200 OK in 112ms."
+      },
+      {
+        "id": "Flux Frontend-log-2",
+        "type": "up",
+        "message": "Site UP",
+        "timestamp": "7 min ago",
+        "details": "Response times recovered after a brief congestion window."
+      },
+      {
+        "id": "Flux Frontend-log-3",
+        "type": "up",
+        "message": "Monitoring cycle completed",
+        "timestamp": "19 min ago",
+        "details": "Next interval is queued and ready."
+      }
+    ]
+  },
+  {
+    "id": "atlas-docs",
+    "name": "Atlas Docs",
+    "url": "https://atlas-docs.example.com",
+    "status": "down",
+    "responseTime": 0,
+    "lastChecked": "8 minutes ago",
+    "interval": 10,
+    "email": "docs@atlas.io",
+    "alertsEnabled": true,
+    "keepAlive": false,
+    "tags": [
+      "Docs",
+      "Public"
+    ],
+    "uptimeSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 93,
+          "response": 216
+        },
+        {
+          "label": "2",
+          "uptime": 96,
+          "response": 242
+        },
+        {
+          "label": "3",
+          "uptime": 97,
+          "response": 268
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 246
+        },
+        {
+          "label": "5",
+          "uptime": 95,
+          "response": 272
+        },
+        {
+          "label": "6",
+          "uptime": 94,
+          "response": 298
+        },
+        {
+          "label": "7",
+          "uptime": 97,
+          "response": 276
+        },
+        {
+          "label": "8",
+          "uptime": 98,
+          "response": 302
+        },
+        {
+          "label": "9",
+          "uptime": 95,
+          "response": 328
+        },
+        {
+          "label": "10",
+          "uptime": 96,
+          "response": 306
+        },
+        {
+          "label": "11",
+          "uptime": 95,
+          "response": 332
+        },
+        {
+          "label": "12",
+          "uptime": 98,
+          "response": 358
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 95,
+          "response": 231
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 257
+        },
+        {
+          "label": "3",
+          "uptime": 99,
+          "response": 283
+        },
+        {
+          "label": "4",
+          "uptime": 100,
+          "response": 261
+        },
+        {
+          "label": "5",
+          "uptime": 97,
+          "response": 287
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 313
+        },
+        {
+          "label": "7",
+          "uptime": 99,
+          "response": 291
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 221
+        },
+        {
+          "label": "2",
+          "uptime": 99,
+          "response": 247
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 273
+        },
+        {
+          "label": "4",
+          "uptime": 100,
+          "response": 251
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 277
+        },
+        {
+          "label": "6",
+          "uptime": 97,
+          "response": 303
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 281
+        },
+        {
+          "label": "8",
+          "uptime": 100,
+          "response": 307
+        },
+        {
+          "label": "9",
+          "uptime": 98,
+          "response": 333
+        },
+        {
+          "label": "10",
+          "uptime": 99,
+          "response": 311
+        }
+      ]
+    },
+    "responseSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 94,
+          "response": 230
+        },
+        {
+          "label": "2",
+          "uptime": 97,
+          "response": 256
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 282
+        },
+        {
+          "label": "4",
+          "uptime": 95,
+          "response": 260
+        },
+        {
+          "label": "5",
+          "uptime": 96,
+          "response": 286
+        },
+        {
+          "label": "6",
+          "uptime": 95,
+          "response": 312
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 290
+        },
+        {
+          "label": "8",
+          "uptime": 95,
+          "response": 316
+        },
+        {
+          "label": "9",
+          "uptime": 96,
+          "response": 342
+        },
+        {
+          "label": "10",
+          "uptime": 97,
+          "response": 320
+        },
+        {
+          "label": "11",
+          "uptime": 96,
+          "response": 346
+        },
+        {
+          "label": "12",
+          "uptime": 95,
+          "response": 372
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 245
+        },
+        {
+          "label": "2",
+          "uptime": 99,
+          "response": 271
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 297
+        },
+        {
+          "label": "4",
+          "uptime": 97,
+          "response": 275
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 301
+        },
+        {
+          "label": "6",
+          "uptime": 97,
+          "response": 327
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 305
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 97,
+          "response": 235
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 261
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 287
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 265
+        },
+        {
+          "label": "5",
+          "uptime": 99,
+          "response": 291
+        },
+        {
+          "label": "6",
+          "uptime": 98,
+          "response": 317
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 295
+        },
+        {
+          "label": "8",
+          "uptime": 98,
+          "response": 321
+        },
+        {
+          "label": "9",
+          "uptime": 99,
+          "response": 347
+        },
+        {
+          "label": "10",
+          "uptime": 100,
+          "response": 325
+        }
+      ]
+    },
+    "miniSeries": [
+      {
+        "label": "0",
+        "value": 90
+      },
+      {
+        "label": "1",
+        "value": 93
+      },
+      {
+        "label": "2",
+        "value": 94
+      },
+      {
+        "label": "3",
+        "value": 95
+      },
+      {
+        "label": "4",
+        "value": 92
+      },
+      {
+        "label": "5",
+        "value": 91
+      },
+      {
+        "label": "6",
+        "value": 94
+      },
+      {
+        "label": "7",
+        "value": 95
+      },
+      {
+        "label": "8",
+        "value": 92
+      },
+      {
+        "label": "9",
+        "value": 93
+      },
+      {
+        "label": "10",
+        "value": 92
+      },
+      {
+        "label": "11",
+        "value": 95
+      }
+    ],
+    "logs": [
+      {
+        "id": "Atlas Docs-log-1",
+        "type": "up",
+        "message": "Atlas Docs responded normally",
+        "timestamp": "Just now",
+        "details": "Health check returned 200 OK in 112ms."
+      },
+      {
+        "id": "Atlas Docs-log-2",
+        "type": "down",
+        "message": "Site DOWN (timeout)",
+        "timestamp": "7 min ago",
+        "details": "Request timed out after the configured threshold."
+      },
+      {
+        "id": "Atlas Docs-log-3",
+        "type": "up",
+        "message": "Monitoring cycle completed",
+        "timestamp": "19 min ago",
+        "details": "Next interval is queued and ready."
+      }
+    ]
+  },
+  {
+    "id": "nova-status-page",
+    "name": "Nova Status Page",
+    "url": "https://nova-status-page.example.com",
+    "status": "up",
+    "responseTime": 96,
+    "lastChecked": "55 seconds ago",
+    "interval": 1,
+    "email": "status@nova.co",
+    "alertsEnabled": true,
+    "keepAlive": true,
+    "tags": [
+      "Status",
+      "Frontend"
+    ],
+    "uptimeSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 94,
+          "response": 230
+        },
+        {
+          "label": "2",
+          "uptime": 97,
+          "response": 256
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 282
+        },
+        {
+          "label": "4",
+          "uptime": 95,
+          "response": 260
+        },
+        {
+          "label": "5",
+          "uptime": 96,
+          "response": 286
+        },
+        {
+          "label": "6",
+          "uptime": 95,
+          "response": 312
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 290
+        },
+        {
+          "label": "8",
+          "uptime": 95,
+          "response": 316
+        },
+        {
+          "label": "9",
+          "uptime": 96,
+          "response": 342
+        },
+        {
+          "label": "10",
+          "uptime": 97,
+          "response": 320
+        },
+        {
+          "label": "11",
+          "uptime": 96,
+          "response": 346
+        },
+        {
+          "label": "12",
+          "uptime": 95,
+          "response": 372
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 96,
+          "response": 245
+        },
+        {
+          "label": "2",
+          "uptime": 99,
+          "response": 271
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 297
+        },
+        {
+          "label": "4",
+          "uptime": 97,
+          "response": 275
+        },
+        {
+          "label": "5",
+          "uptime": 98,
+          "response": 301
+        },
+        {
+          "label": "6",
+          "uptime": 97,
+          "response": 327
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 305
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 97,
+          "response": 235
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 261
+        },
+        {
+          "label": "3",
+          "uptime": 100,
+          "response": 287
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 265
+        },
+        {
+          "label": "5",
+          "uptime": 99,
+          "response": 291
+        },
+        {
+          "label": "6",
+          "uptime": 98,
+          "response": 317
+        },
+        {
+          "label": "7",
+          "uptime": 100,
+          "response": 295
+        },
+        {
+          "label": "8",
+          "uptime": 98,
+          "response": 321
+        },
+        {
+          "label": "9",
+          "uptime": 99,
+          "response": 347
+        },
+        {
+          "label": "10",
+          "uptime": 100,
+          "response": 325
+        }
+      ]
+    },
+    "responseSeries": {
+      "24h": [
+        {
+          "label": "1",
+          "uptime": 95,
+          "response": 244
+        },
+        {
+          "label": "2",
+          "uptime": 98,
+          "response": 270
+        },
+        {
+          "label": "3",
+          "uptime": 95,
+          "response": 296
+        },
+        {
+          "label": "4",
+          "uptime": 96,
+          "response": 274
+        },
+        {
+          "label": "5",
+          "uptime": 97,
+          "response": 300
+        },
+        {
+          "label": "6",
+          "uptime": 96,
+          "response": 326
+        },
+        {
+          "label": "7",
+          "uptime": 95,
+          "response": 304
+        },
+        {
+          "label": "8",
+          "uptime": 96,
+          "response": 330
+        },
+        {
+          "label": "9",
+          "uptime": 97,
+          "response": 356
+        },
+        {
+          "label": "10",
+          "uptime": 98,
+          "response": 334
+        },
+        {
+          "label": "11",
+          "uptime": 93,
+          "response": 360
+        },
+        {
+          "label": "12",
+          "uptime": 96,
+          "response": 386
+        }
+      ],
+      "7d": [
+        {
+          "label": "1",
+          "uptime": 97,
+          "response": 259
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 285
+        },
+        {
+          "label": "3",
+          "uptime": 97,
+          "response": 311
+        },
+        {
+          "label": "4",
+          "uptime": 98,
+          "response": 289
+        },
+        {
+          "label": "5",
+          "uptime": 99,
+          "response": 315
+        },
+        {
+          "label": "6",
+          "uptime": 98,
+          "response": 341
+        },
+        {
+          "label": "7",
+          "uptime": 97,
+          "response": 319
+        }
+      ],
+      "30d": [
+        {
+          "label": "1",
+          "uptime": 98,
+          "response": 249
+        },
+        {
+          "label": "2",
+          "uptime": 100,
+          "response": 275
+        },
+        {
+          "label": "3",
+          "uptime": 98,
+          "response": 301
+        },
+        {
+          "label": "4",
+          "uptime": 99,
+          "response": 279
+        },
+        {
+          "label": "5",
+          "uptime": 100,
+          "response": 305
+        },
+        {
+          "label": "6",
+          "uptime": 99,
+          "response": 331
+        },
+        {
+          "label": "7",
+          "uptime": 98,
+          "response": 309
+        },
+        {
+          "label": "8",
+          "uptime": 99,
+          "response": 335
+        },
+        {
+          "label": "9",
+          "uptime": 100,
+          "response": 361
+        },
+        {
+          "label": "10",
+          "uptime": 100,
+          "response": 339
+        }
+      ]
+    },
+    "miniSeries": [
+      {
+        "label": "0",
+        "value": 91
+      },
+      {
+        "label": "1",
+        "value": 94
+      },
+      {
+        "label": "2",
+        "value": 95
+      },
+      {
+        "label": "3",
+        "value": 92
+      },
+      {
+        "label": "4",
+        "value": 93
+      },
+      {
+        "label": "5",
+        "value": 92
+      },
+      {
+        "label": "6",
+        "value": 95
+      },
+      {
+        "label": "7",
+        "value": 92
+      },
+      {
+        "label": "8",
+        "value": 93
+      },
+      {
+        "label": "9",
+        "value": 94
+      },
+      {
+        "label": "10",
+        "value": 93
+      },
+      {
+        "label": "11",
+        "value": 92
+      }
+    ],
+    "logs": [
+      {
+        "id": "Nova Status Page-log-1",
+        "type": "up",
+        "message": "Nova Status Page responded normally",
+        "timestamp": "Just now",
+        "details": "Health check returned 200 OK in 112ms."
+      },
+      {
+        "id": "Nova Status Page-log-2",
+        "type": "up",
+        "message": "Site UP",
+        "timestamp": "7 min ago",
+        "details": "Response times recovered after a brief congestion window."
+      },
+      {
+        "id": "Nova Status Page-log-3",
+        "type": "up",
+        "message": "Monitoring cycle completed",
+        "timestamp": "19 min ago",
+        "details": "Next interval is queued and ready."
+      }
+    ]
+  }
+]
