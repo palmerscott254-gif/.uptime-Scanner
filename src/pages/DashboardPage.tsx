@@ -126,12 +126,12 @@ export function DashboardPage({
           <label className="block space-y-2">
             <span className="text-sm font-medium text-gray-300">Tag filter</span>
             <select
-              className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition focus:border-info/60"
+              className="h-12 w-full appearance-none rounded-2xl border border-white/10 bg-app-card px-4 text-sm text-white outline-none transition focus:border-info/60"
               value={tagFilter}
               onChange={(event) => onTagFilterChange(event.target.value)}
             >
               {tagOptions.map((tag) => (
-                <option key={tag} value={tag}>
+                <option className="bg-app-card text-white" key={tag} value={tag}>
                   {tag === 'all' ? 'All tags' : tag}
                 </option>
               ))}

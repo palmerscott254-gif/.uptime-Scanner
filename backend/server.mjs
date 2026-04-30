@@ -41,11 +41,13 @@ async function readProjects() {
   await ensureDataFile();
   const raw = await fs.readFile(DATA_FILE, 'utf8');
   const parsed = JSON.parse(raw || '[]');
-  if (Array.isArray(parsed) && parsed.length) return parsed;
-
-  const seeded = seedProjects();
-  await writeProjects(seeded);
-  return seeded;
+  if (Array.isArray(parsed) && parsed.length) {
+    return parsed.map((project) => ({
+      ...project,
+      logs: createLogs(project.name, project.status),
+    }));
+  }
+  return [];
 }
 
 async function writeProjects(projects) {
@@ -112,30 +114,49 @@ function createMiniSeries(seed) {
 }
 
 function createLogs(name, status) {
+  const primary =
+    status === 'down'
+      ? {
+          message: `${name} probe failed`,
+          details: 'Connection timed out after the configured threshold.',
+        }
+      : status === 'slow'
+        ? {
+            message: `${name} latency above threshold`,
+            details: 'Endpoint returned 200 OK with elevated response time.',
+          }
+        : {
+            message: `${name} probe succeeded`,
+            details: 'Endpoint returned 200 OK within the expected latency window.',
+          };
+
   return [
     {
       id: `${name}-log-1`,
       type: 'up',
-      message: `${name} responded normally`,
+      message: primary.message,
       timestamp: 'Just now',
-      details: 'Health check returned 200 OK in 112ms.',
+      details: primary.details,
     },
     {
       id: `${name}-log-2`,
       type: status,
-      message: status === 'down' ? 'Site DOWN (timeout)' : status === 'slow' ? 'Site SLOW (latency spike)' : 'Site UP',
+      message:
+        status === 'down'
+          ? `${name} incident opened`
+          : `${name} latency evaluation in progress`,
       timestamp: '7 min ago',
       details:
         status === 'down'
-          ? 'Request timed out after the configured threshold.'
-          : 'Response times recovered after a brief congestion window.',
+          ? 'Retry threshold reached after consecutive timeouts.'
+          : 'Latency spiked above the warning threshold on the last check.',
     },
     {
       id: `${name}-log-3`,
       type: 'up',
-      message: 'Monitoring cycle completed',
+      message: 'Next probe scheduled',
       timestamp: '19 min ago',
-      details: 'Next interval is queued and ready.',
+      details: 'Monitoring will continue on the configured interval.',
     },
   ];
 }
@@ -163,34 +184,6 @@ function createProject({ name, url, interval, email }) {
     miniSeries: createMiniSeries(seed),
     logs: createLogs(safeName, 'up'),
   };
-}
-
-function seedProjects() {
-  const defaults = [
-    { name: 'Nebula Commerce', url: generatePublicUrl('Nebula Commerce'), status: 'up', responseTime: 184, lastChecked: '30 seconds ago', interval: 1, email: 'ops@nebula.com', alertsEnabled: true, keepAlive: true, tags: ['Storefront', 'API'] },
-    { name: 'Pulse API', url: generatePublicUrl('Pulse API'), status: 'slow', responseTime: 864, lastChecked: '2 minutes ago', interval: 5, email: 'alerts@pulse.dev', alertsEnabled: true, keepAlive: false, tags: ['API', 'Backend'] },
-    { name: 'Flux Frontend', url: generatePublicUrl('Flux Frontend'), status: 'up', responseTime: 122, lastChecked: '12 seconds ago', interval: 1, email: 'team@flux.dev', alertsEnabled: false, keepAlive: true, tags: ['Frontend', 'CDN'] },
-    { name: 'Atlas Docs', url: generatePublicUrl('Atlas Docs'), status: 'down', responseTime: 0, lastChecked: '8 minutes ago', interval: 10, email: 'docs@atlas.io', alertsEnabled: true, keepAlive: false, tags: ['Docs', 'Public'] },
-    { name: 'Nova Status Page', url: generatePublicUrl('Nova Status Page'), status: 'up', responseTime: 96, lastChecked: '55 seconds ago', interval: 1, email: 'status@nova.co', alertsEnabled: true, keepAlive: true, tags: ['Status', 'Frontend'] },
-  ];
-
-  return defaults.map((project, index) => ({
-    id: slugify(project.name),
-    name: project.name,
-    url: project.url,
-    status: project.status,
-    responseTime: project.responseTime,
-    lastChecked: project.lastChecked,
-    interval: project.interval,
-    email: project.email,
-    alertsEnabled: project.alertsEnabled,
-    keepAlive: project.keepAlive,
-    tags: project.tags,
-    uptimeSeries: createSeries(index + 1),
-    responseSeries: createSeries(index + 2),
-    miniSeries: createMiniSeries(index + 1),
-    logs: createLogs(project.name, project.status),
-  }));
 }
 
 async function parseBody(req) {

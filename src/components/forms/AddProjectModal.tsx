@@ -99,26 +99,26 @@ export function AddProjectModal({
               <label className="block space-y-2">
                 <span className="text-sm font-medium text-gray-300">Check Interval</span>
                 <select
-                  className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition focus:border-success/60"
+                  className="h-12 w-full appearance-none rounded-2xl border border-white/10 bg-app-card px-4 text-sm text-white outline-none transition focus:border-success/60"
                   value={values.interval}
                   onChange={(event) => onChange({ ...values, interval: Number(event.target.value) })}
                 >
-                  <option value={1}>1 minute</option>
-                  <option value={5}>5 minutes</option>
-                  <option value={10}>10 minutes</option>
-                  <option value={15}>15 minutes</option>
+                  <option className="bg-app-card text-white" value={1}>1 minute</option>
+                  <option className="bg-app-card text-white" value={5}>5 minutes</option>
+                  <option className="bg-app-card text-white" value={10}>10 minutes</option>
+                  <option className="bg-app-card text-white" value={15}>15 minutes</option>
                 </select>
               </label>
               <label className="block space-y-2">
                 <span className="text-sm font-medium text-gray-300">Retry Threshold</span>
                 <select
-                  className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition focus:border-success/60"
+                  className="h-12 w-full appearance-none rounded-2xl border border-white/10 bg-app-card px-4 text-sm text-white outline-none transition focus:border-success/60"
                   value={values.retryThreshold}
                   onChange={(event) => onChange({ ...values, retryThreshold: Number(event.target.value) })}
                 >
-                  <option value={1}>1 retry</option>
-                  <option value={2}>2 retries</option>
-                  <option value={3}>3 retries</option>
+                  <option className="bg-app-card text-white" value={1}>1 retry</option>
+                  <option className="bg-app-card text-white" value={2}>2 retries</option>
+                  <option className="bg-app-card text-white" value={3}>3 retries</option>
                 </select>
               </label>
             </div>

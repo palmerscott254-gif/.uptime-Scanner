@@ -33,27 +33,49 @@ const makeSeries = (seed: number) => {
 };
 
 function createLogs(name: string, status: 'up' | 'down' | 'slow') {
+  const primary =
+    status === 'down'
+      ? {
+          message: `${name} probe failed`,
+          details: 'Connection timed out after the configured threshold.',
+        }
+      : status === 'slow'
+        ? {
+            message: `${name} latency above threshold`,
+            details: 'Endpoint returned 200 OK with elevated response time.',
+          }
+        : {
+            message: `${name} probe succeeded`,
+            details: 'Endpoint returned 200 OK within the expected latency window.',
+          };
+
   return [
     {
       id: `${name}-1`,
       type: 'up' as const,
-      message: `${name} responded within SLA`,
+      message: primary.message,
       timestamp: 'Just now',
-      details: 'TLS handshake completed in 48ms.',
+      details: primary.details,
     },
     {
       id: `${name}-2`,
       type: status === 'down' ? ('down' as const) : ('slow' as const),
-      message: status === 'down' ? 'Site DOWN (timeout)' : 'Site SLOW (recovered)',
+      message:
+        status === 'down'
+          ? `${name} incident opened`
+          : `${name} latency evaluation in progress`,
       timestamp: '6 min ago',
-      details: status === 'down' ? 'Request timed out after 10s.' : 'Latency peaked at 980ms before recovery.',
+      details:
+        status === 'down'
+          ? 'Retry threshold reached after consecutive timeouts.'
+          : 'Latency spiked above the warning threshold on the last check.',
     },
     {
       id: `${name}-3`,
       type: 'up' as const,
-      message: 'Monitoring interval completed',
+      message: 'Next probe scheduled',
       timestamp: '18 min ago',
-      details: 'Next check scheduled in 60 seconds.',
+      details: 'Monitoring will continue on the configured interval.',
     },
   ];
 }
@@ -66,90 +88,4 @@ const makeMiniSeries = (seed: number) =>
     }),
   );
 
-export const mockProjects: Project[] = [
-  {
-    id: 'nebula',
-    name: 'Nebula Commerce',
-    url: generatePublicUrl('Nebula Commerce'),
-    status: 'up',
-    responseTime: 184,
-    lastChecked: '30 seconds ago',
-    interval: 1,
-    email: 'ops@nebula.com',
-    alertsEnabled: true,
-    keepAlive: true,
-    tags: ['Storefront', 'API'],
-    uptimeSeries: makeSeries(1),
-    responseSeries: makeSeries(2),
-    miniSeries: makeMiniSeries(1),
-    logs: createLogs('Nebula Commerce', 'up'),
-  },
-  {
-    id: 'pulse-api',
-    name: 'Pulse API',
-    url: generatePublicUrl('Pulse API'),
-    status: 'slow',
-    responseTime: 864,
-    lastChecked: '2 minutes ago',
-    interval: 5,
-    email: 'alerts@pulse.dev',
-    alertsEnabled: true,
-    keepAlive: false,
-    tags: ['API', 'Backend'],
-    uptimeSeries: makeSeries(2),
-    responseSeries: makeSeries(3),
-    miniSeries: makeMiniSeries(2),
-    logs: createLogs('Pulse API', 'slow'),
-  },
-  {
-    id: 'flux-frontend',
-    name: 'Flux Frontend',
-    url: generatePublicUrl('Flux Frontend'),
-    status: 'up',
-    responseTime: 122,
-    lastChecked: '12 seconds ago',
-    interval: 1,
-    email: 'team@flux.dev',
-    alertsEnabled: false,
-    keepAlive: true,
-    tags: ['Frontend', 'CDN'],
-    uptimeSeries: makeSeries(3),
-    responseSeries: makeSeries(1),
-    miniSeries: makeMiniSeries(3),
-    logs: createLogs('Flux Frontend', 'up'),
-  },
-  {
-    id: 'atlas-docs',
-    name: 'Atlas Docs',
-    url: generatePublicUrl('Atlas Docs'),
-    status: 'down',
-    responseTime: 0,
-    lastChecked: '8 minutes ago',
-    interval: 10,
-    email: 'docs@atlas.io',
-    alertsEnabled: true,
-    keepAlive: false,
-    tags: ['Docs', 'Public'],
-    uptimeSeries: makeSeries(4),
-    responseSeries: makeSeries(4),
-    miniSeries: makeMiniSeries(4),
-    logs: createLogs('Atlas Docs', 'down'),
-  },
-  {
-    id: 'nova-status',
-    name: 'Nova Status Page',
-    url: generatePublicUrl('Nova Status Page'),
-    status: 'up',
-    responseTime: 96,
-    lastChecked: '55 seconds ago',
-    interval: 1,
-    email: 'status@nova.co',
-    alertsEnabled: true,
-    keepAlive: true,
-    tags: ['Status', 'Frontend'],
-    uptimeSeries: makeSeries(5),
-    responseSeries: makeSeries(5),
-    miniSeries: makeMiniSeries(5),
-    logs: createLogs('Nova Status Page', 'up'),
-  },
-];
+export const mockProjects: Project[] = [];

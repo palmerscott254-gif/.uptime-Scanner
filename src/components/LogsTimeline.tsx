@@ -12,7 +12,7 @@ export function LogsTimeline({ logs }: LogsTimelineProps) {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-white">Logs Timeline</h3>
-          <p className="mt-1 text-sm text-gray-400">Operational events and incident history</p>
+          <p className="mt-1 text-sm text-gray-400">System-generated checks and incident transitions</p>
         </div>
         <Clock3 className="h-5 w-5 text-gray-500" />
       </div>
