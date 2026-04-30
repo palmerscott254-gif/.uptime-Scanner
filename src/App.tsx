@@ -148,13 +148,13 @@ export default function App() {
 
   const handleViewProject = (project: Project) => {
     setSelectedProjectId(project.id);
-    setActiveNav('monitors');
+    setActiveNav('dashboard');
     setView('details');
   };
 
   const handleLogsProject = (project: Project) => {
     setSelectedProjectId(project.id);
-    setActiveNav('monitors');
+    setActiveNav('dashboard');
     setView('details');
   };
 
@@ -166,10 +166,6 @@ export default function App() {
     }
     if (key === 'status') {
       setView('status');
-      return;
-    }
-    if (key === 'monitors' && selectedProject) {
-      setView('details');
       return;
     }
     setView('dashboard');
