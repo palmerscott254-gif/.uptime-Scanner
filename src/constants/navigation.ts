@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bell, ChartNoAxesCombined, LayoutDashboard, Settings, Siren } from 'lucide-react';
+import { Bell, ChartNoAxesCombined, LayoutDashboard, Siren } from 'lucide-react';
 
-export type NavKey = 'dashboard' | 'alerts' | 'analytics' | 'status' | 'settings';
+export type NavKey = 'dashboard' | 'alerts' | 'analytics' | 'status';
 
 export interface NavItem {
   key: NavKey;
@@ -14,5 +14,4 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'alerts', label: 'Alerts', icon: Siren },
   { key: 'analytics', label: 'Analytics', icon: ChartNoAxesCombined },
   { key: 'status', label: 'Status Pages', icon: Bell },
-  { key: 'settings', label: 'Settings', icon: Settings },
 ];

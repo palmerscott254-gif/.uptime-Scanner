@@ -42,10 +42,7 @@ async function readProjects() {
   const raw = await fs.readFile(DATA_FILE, 'utf8');
   const parsed = JSON.parse(raw || '[]');
   if (Array.isArray(parsed) && parsed.length) {
-    return parsed.map((project) => ({
-      ...project,
-      logs: createLogs(project.name, project.status),
-    }));
+    return parsed;
   }
   return [];
 }

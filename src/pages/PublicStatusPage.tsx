@@ -5,9 +5,10 @@ import { StatusBadge } from '../components/StatusBadge';
 
 interface PublicStatusPageProps {
   projects: Project[];
+  onSelectProject?: (projectId: string) => void;
 }
 
-export function PublicStatusPage({ projects }: PublicStatusPageProps) {
+export function PublicStatusPage({ projects, onSelectProject }: PublicStatusPageProps) {
   const summary = projectSummary(projects);
   const uptime = summary.total ? Math.round((summary.online / summary.total) * 100) : 0;
 
@@ -27,15 +28,15 @@ export function PublicStatusPage({ projects }: PublicStatusPageProps) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3 lg:w-[32rem]">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-white/20 hover:bg-white/[0.05]">
               <p className="text-xs uppercase tracking-[0.24em] text-gray-500">Uptime</p>
               <p className="mt-2 text-3xl font-semibold text-white">{uptime}%</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-white/20 hover:bg-white/[0.05]">
               <p className="text-xs uppercase tracking-[0.24em] text-gray-500">Online</p>
               <p className="mt-2 text-3xl font-semibold text-white">{summary.online}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-white/20 hover:bg-white/[0.05]">
               <p className="text-xs uppercase tracking-[0.24em] text-gray-500">Issues</p>
               <p className="mt-2 text-3xl font-semibold text-white">{summary.down}</p>
             </div>
@@ -55,7 +56,19 @@ export function PublicStatusPage({ projects }: PublicStatusPageProps) {
 
           <div className="mt-5 space-y-3">
             {projects.map((project) => (
-              <div key={project.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
+              <div
+                key={project.id}
+                onClick={() => onSelectProject?.(project.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectProject?.(project.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="flex cursor-pointer items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 transition-all hover:border-white/20 hover:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-app-bg"
+              >
                 <div>
                   <p className="font-medium text-white">{project.name}</p>
                   <p className="mt-1 text-sm text-gray-400">{project.url}</p>

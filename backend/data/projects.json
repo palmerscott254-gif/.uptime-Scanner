@@ -377,20 +377,6 @@
         "message": "Pieglobalfunitures Co K probe succeeded",
         "timestamp": "Just now",
         "details": "Endpoint returned 200 OK within the expected latency window."
-      },
-      {
-        "id": "Pieglobalfunitures Co K-log-2",
-        "type": "up",
-        "message": "Pieglobalfunitures Co K latency evaluation in progress",
-        "timestamp": "7 min ago",
-        "details": "Latency spiked above the warning threshold on the last check."
-      },
-      {
-        "id": "Pieglobalfunitures Co K-log-3",
-        "type": "up",
-        "message": "Next probe scheduled",
-        "timestamp": "19 min ago",
-        "details": "Monitoring will continue on the configured interval."
       }
     ]
   }

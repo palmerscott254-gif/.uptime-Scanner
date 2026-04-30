@@ -252,7 +252,7 @@ export default function App() {
   };
 
   const renderView = () => {
-    if (['alerts', 'analytics', 'settings'].includes(activeNav)) {
+    if (['alerts', 'analytics'].includes(activeNav)) {
       const current = NAV_ITEMS.find((item) => item.key === activeNav);
       return (
         <section className="rounded-[1.75rem] border border-dashed border-white/15 bg-app-card/60 p-12 text-center shadow-soft">
@@ -267,7 +267,15 @@ export default function App() {
     }
 
     if (view === 'status') {
-      return <PublicStatusPage projects={projects} />;
+      return (
+        <PublicStatusPage
+          projects={projects}
+          onSelectProject={(id) => {
+            setSelectedProjectId(id);
+            setView('details');
+          }}
+        />
+      );
     }
 
     return (
@@ -301,7 +309,11 @@ export default function App() {
       />
 
       <div className={sidebarCollapsed ? 'lg:pl-[84px]' : 'lg:pl-[264px]'}>
-        <Topbar search={search} onSearchChange={setSearch} onAddProject={openModal} />
+        <Topbar
+          search={activeNav === 'dashboard' && view === 'dashboard' ? search : undefined}
+          onSearchChange={activeNav === 'dashboard' && view === 'dashboard' ? setSearch : undefined}
+          onAddProject={activeNav === 'dashboard' && view === 'dashboard' ? openModal : undefined}
+        />
 
         <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">{renderView()}</main>
       </div>
