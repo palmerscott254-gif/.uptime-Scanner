@@ -17,11 +17,11 @@ export function Modal({ open, title, description, onClose, children }: ModalProp
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
       <button
         type="button"
-        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
         aria-label="Close modal overlay"
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft">
+      <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft transition-all duration-300">
         <div className="flex items-start justify-between gap-4 border-b border-white/8 px-6 py-5">
           <div>
             <h2 className="text-xl font-semibold text-white">{title}</h2>

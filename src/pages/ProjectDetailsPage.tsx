@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Globe, Mail, ShieldCheck, TimerReset } from 'lucide-react';
+import { ArrowLeft, Globe, Mail, MapPin, ShieldCheck, TimerReset, Webhook } from 'lucide-react';
 import type { Project, TimeRange } from '../types';
 import { formatResponseTime, statusMeta } from '../utils';
 import { Button } from '../components/ui/Button';
@@ -21,6 +21,9 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
   const meta = statusMeta[project.status];
   const [interval, setInterval] = useState(project.interval);
   const [email, setEmail] = useState(project.email);
+  const [sms, setSms] = useState('');
+  const [webhook, setWebhook] = useState('');
+  const [retryThreshold, setRetryThreshold] = useState(2);
   const [alertsEnabled, setAlertsEnabled] = useState(project.alertsEnabled);
   const [keepAlive, setKeepAlive] = useState(project.keepAlive);
 
@@ -48,6 +51,14 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
                 <span className="inline-flex items-center gap-2">
                   <Globe className="h-4 w-4" />
                   {project.url}
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-success" />
+                  {project.sslValid ? 'SSL valid' : 'SSL requires attention'}
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  {project.region ?? 'Region unavailable'}
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <TimerReset className="h-4 w-4" />
@@ -84,8 +95,8 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
 
         <div className="space-y-5">
           <section className="rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft">
-            <h3 className="text-lg font-semibold text-white">Project Settings</h3>
-            <p className="mt-1 text-sm text-gray-400">Configure notifications and monitoring behavior.</p>
+            <h3 className="text-lg font-semibold text-white">Alert Settings</h3>
+            <p className="mt-1 text-sm text-gray-400">Configure escalation routing and monitoring behavior.</p>
             <div className="mt-5 space-y-4">
               <label className="block space-y-2">
                 <span className="text-sm font-medium text-gray-300">Interval</span>
@@ -109,6 +120,36 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
                 helperText="Receive incident alerts and recovery notifications."
               />
 
+              <Input
+                label="SMS Placeholder"
+                value={sms}
+                onChange={(event) => setSms(event.target.value)}
+                placeholder="+1 (555) 000-1234"
+                helperText="Reserved for SMS integration."
+              />
+
+              <Input
+                label="Webhook Placeholder"
+                value={webhook}
+                onChange={(event) => setWebhook(event.target.value)}
+                placeholder="https://hooks.slack.com/..."
+                leftIcon={<Webhook className="h-4 w-4" />}
+                helperText="Reserved for webhook notifications."
+              />
+
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-gray-300">Retry threshold</span>
+                <select
+                  className="h-12 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-sm text-white outline-none transition focus:border-success/60"
+                  value={retryThreshold}
+                  onChange={(event) => setRetryThreshold(Number(event.target.value))}
+                >
+                  <option value={1}>1 retry</option>
+                  <option value={2}>2 retries</option>
+                  <option value={3}>3 retries</option>
+                </select>
+              </label>
+
               <ToggleSwitch
                 checked={alertsEnabled}
                 onChange={setAlertsEnabled}
@@ -126,11 +167,13 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
           </section>
 
           <section className="rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft">
-            <h3 className="text-lg font-semibold text-white">Quick Overview</h3>
+            <h3 className="text-lg font-semibold text-white">Incident Insights</h3>
             <div className="mt-5 grid gap-3">
-              {project.tags.map((tag) => (
-                <div key={tag} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-gray-300">
-                  {tag}
+              {project.logs.slice(0, 3).map((log) => (
+                <div key={log.id} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-gray-300">
+                  <p className="font-medium text-white">{log.message}</p>
+                  <p className="mt-1 text-xs text-gray-500">{log.timestamp}</p>
+                  {log.details ? <p className="mt-1 text-gray-400">{log.details}</p> : null}
                 </div>
               ))}
               <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-success/15 to-transparent px-4 py-4">

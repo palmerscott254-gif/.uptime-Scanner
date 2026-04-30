@@ -1,6 +1,7 @@
 export type MonitorStatus = 'up' | 'down' | 'slow';
 export type PageView = 'dashboard' | 'details' | 'status';
 export type TimeRange = '24h' | '7d' | '30d';
+export type SortKey = 'uptime' | 'response';
 
 export interface ChartPoint {
   label: string;
@@ -33,6 +34,11 @@ export interface Project {
   alertsEnabled: boolean;
   keepAlive: boolean;
   tags: string[];
+  region?: string;
+  sslValid?: boolean;
+  uptimePercent?: number;
+  lastIncident?: string;
+  incidentCount?: number;
   uptimeSeries: Record<TimeRange, ChartPoint[]>;
   responseSeries: Record<TimeRange, ChartPoint[]>;
   miniSeries: SparkPoint[];
@@ -44,4 +50,6 @@ export interface ProjectFormValues {
   name: string;
   interval: number;
   email: string;
+  keepAlive: boolean;
+  retryThreshold: number;
 }

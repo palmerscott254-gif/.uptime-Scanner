@@ -1,4 +1,4 @@
-import { ChevronRight, Clock3, Globe, ListChecks } from 'lucide-react';
+import { ChevronRight, Clock3, Globe, ListChecks, MapPin, ShieldCheck } from 'lucide-react';
 import type { Project } from '../types';
 import { cn, formatResponseTime, statusMeta } from '../utils';
 import { Button } from './ui/Button';
@@ -51,6 +51,18 @@ export function ProjectCard({ project, onView, onLogs }: ProjectCardProps) {
           </div>
         </div>
 
+        <div className="grid gap-2 rounded-2xl border border-white/8 bg-white/[0.02] p-3 text-sm text-gray-300 sm:grid-cols-2">
+          <div className="inline-flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-gray-500" />
+            <span>{project.region ?? 'Region N/A'}</span>
+          </div>
+          <div className="inline-flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-success" />
+            <span>{project.sslValid ? 'SSL Valid' : 'SSL Expiring'}</span>
+          </div>
+          <div className="sm:col-span-2 text-gray-400">Last incident: {project.lastIncident ?? 'No incidents'}</div>
+        </div>
+
         <MiniChart data={project.miniSeries} status={project.status} />
 
         <div className="flex flex-wrap gap-3 pt-1">
@@ -78,7 +90,7 @@ export function ProjectCard({ project, onView, onLogs }: ProjectCardProps) {
             <span>Checks every {project.interval} min</span>
           </div>
           <div className="flex items-center gap-2 text-gray-500 transition-colors group-hover:text-gray-300">
-            <span>{project.tags.join(' • ')}</span>
+            <span>{project.tags.map((tag) => `#${tag}`).join(' ')}</span>
           </div>
         </div>
       </div>

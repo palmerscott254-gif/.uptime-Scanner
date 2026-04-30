@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Activity, LayoutDashboard, MonitorSmartphone } from 'lucide-react';
-import { Navbar } from './components/Navbar';
 import { AddProjectModal } from './components/forms/AddProjectModal';
-import { Button } from './components/ui/Button';
+import { Sidebar } from './components/layout/Sidebar';
+import { Topbar } from './components/layout/Topbar';
+import { NAV_ITEMS, type NavKey } from './constants/navigation';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
-import type { MonitorStatus, PageView, Project, ProjectFormValues, TimeRange } from './types';
-import { extractProjectName, normalizeUrl } from './utils';
+import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
+import { enrichProject, extractProjectName, normalizeUrl } from './utils';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -22,16 +22,23 @@ const defaultForm: ProjectFormValues = {
   name: '',
   interval: 1,
   email: '',
+  keepAlive: true,
+  retryThreshold: 2,
 };
 
 export default function App() {
+  const [activeNav, setActiveNav] = useState<NavKey>('dashboard');
   const [view, setView] = useState<PageView>('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarOpenMobile, setSidebarOpenMobile] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [range, setRange] = useState<TimeRange>('24h');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<MonitorStatus | 'all'>('all');
+  const [tagFilter, setTagFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<SortKey>('uptime');
   const [modalOpen, setModalOpen] = useState(false);
   const [formValues, setFormValues] = useState<ProjectFormValues>(defaultForm);
   const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -42,7 +49,7 @@ export default function App() {
         const response = await fetch(`${API_BASE_URL}/api/projects`);
         const data = (await response.json()) as { data?: Project[] } | Project[];
         const nextProjects = Array.isArray(data) ? data : data.data ?? [];
-        setProjects(nextProjects);
+        setProjects(nextProjects.map(enrichProject));
         setSelectedProjectId((current) => current || nextProjects[0]?.id || '');
       } catch (error) {
         console.error('Failed to load projects:', error);
@@ -75,7 +82,7 @@ export default function App() {
   const openModal = () => {
     setModalOpen(true);
     setTestStatus('idle');
-    setFormValues({ ...defaultForm, name: '', url: '', interval: 1, email: '' });
+    setFormValues({ ...defaultForm, name: '', url: '', interval: 1, email: '', keepAlive: true, retryThreshold: 2 });
   };
 
   const handleFormChange = (next: ProjectFormValues) => {
@@ -128,7 +135,7 @@ export default function App() {
       const created = 'data' in payload ? payload.data : payload;
       if (!created || !('id' in created)) return;
 
-      setProjects((current) => [created, ...current]);
+      setProjects((current) => [enrichProject(created), ...current]);
       setSelectedProjectId(created.id);
       setModalOpen(false);
       setView('dashboard');
@@ -141,15 +148,44 @@ export default function App() {
 
   const handleViewProject = (project: Project) => {
     setSelectedProjectId(project.id);
+    setActiveNav('monitors');
     setView('details');
   };
 
   const handleLogsProject = (project: Project) => {
     setSelectedProjectId(project.id);
+    setActiveNav('monitors');
     setView('details');
   };
 
+  const handleNavChange = (key: NavKey) => {
+    setActiveNav(key);
+    if (key === 'dashboard') {
+      setView('dashboard');
+      return;
+    }
+    if (key === 'status') {
+      setView('status');
+      return;
+    }
+    if (key === 'monitors' && selectedProject) {
+      setView('details');
+      return;
+    }
+    setView('dashboard');
+  };
+
   const renderView = () => {
+    if (['alerts', 'analytics', 'settings'].includes(activeNav)) {
+      const current = NAV_ITEMS.find((item) => item.key === activeNav);
+      return (
+        <section className="rounded-[1.75rem] border border-dashed border-white/15 bg-app-card/60 p-12 text-center shadow-soft">
+          <h2 className="text-3xl font-semibold text-white">{current?.label}</h2>
+          <p className="mt-3 text-gray-400">This module shell is ready for the next backend integration pass.</p>
+        </section>
+      );
+    }
+
     if (view === 'details' && selectedProject) {
       return <ProjectDetailsPage project={selectedProject} range={range} onRangeChange={setRange} onBack={() => setView('dashboard')} />;
     }
@@ -164,8 +200,12 @@ export default function App() {
         loading={loading}
         search={search}
         statusFilter={statusFilter}
+        tagFilter={tagFilter}
+        sortBy={sortBy}
         onSearchChange={setSearch}
         onStatusFilterChange={setStatusFilter}
+        onTagFilterChange={setTagFilter}
+        onSortChange={setSortBy}
         onAddProject={openModal}
         onViewProject={handleViewProject}
         onLogsProject={handleLogsProject}
@@ -175,38 +215,20 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-app-bg text-white">
-      <Navbar onAddProject={openModal} />
+      <Sidebar
+        active={activeNav}
+        onChange={handleNavChange}
+        collapsed={sidebarCollapsed}
+        onCollapseToggle={() => setSidebarCollapsed((current) => !current)}
+        mobileOpen={sidebarOpenMobile}
+        onMobileToggle={() => setSidebarOpenMobile((current) => !current)}
+      />
 
-      <div className="border-b border-white/8 bg-white/[0.02]">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
-          <Button
-            variant={view === 'dashboard' ? 'primary' : 'ghost'}
-            size="sm"
-            icon={<LayoutDashboard className="h-4 w-4" />}
-            onClick={() => setView('dashboard')}
-          >
-            Dashboard
-          </Button>
-          <Button
-            variant={view === 'details' ? 'primary' : 'ghost'}
-            size="sm"
-            icon={<Activity className="h-4 w-4" />}
-            onClick={() => setView('details')}
-          >
-            Project Details
-          </Button>
-          <Button
-            variant={view === 'status' ? 'primary' : 'ghost'}
-            size="sm"
-            icon={<MonitorSmartphone className="h-4 w-4" />}
-            onClick={() => setView('status')}
-          >
-            Public Status
-          </Button>
-        </div>
+      <div className={sidebarCollapsed ? 'lg:pl-[84px]' : 'lg:pl-[264px]'}>
+        <Topbar search={search} onSearchChange={setSearch} onAddProject={openModal} />
+
+        <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">{renderView()}</main>
       </div>
-
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{renderView()}</main>
 
       <AddProjectModal
         open={modalOpen}

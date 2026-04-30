@@ -1,4 +1,4 @@
-import type { MonitorStatus, Project, SparkPoint } from './types';
+import type { MonitorStatus, Project, SparkPoint, TimeRange } from './types';
 
 export const statusMeta: Record<
   MonitorStatus,
@@ -40,6 +40,7 @@ export function formatInterval(minutes: number) {
 }
 
 export function formatRelativeTime(value: string) {
+  if (!value) return '—';
   return value;
 }
 
@@ -75,6 +76,24 @@ export function generatePublicUrl(name: string) {
 export function averageResponse(projects: Project[]) {
   if (!projects.length) return 0;
   return Math.round(projects.reduce((sum, project) => sum + project.responseTime, 0) / projects.length);
+}
+
+export function getUptimePercent(project: Project, range: TimeRange = '7d') {
+  const points = project.uptimeSeries?.[range] ?? [];
+  if (!points.length) return 0;
+  const total = points.reduce((sum, point) => sum + point.uptime, 0);
+  return Number((total / points.length).toFixed(2));
+}
+
+export function enrichProject(project: Project): Project {
+  return {
+    ...project,
+    region: project.region ?? (project.tags.includes('API') ? 'US-East' : 'EU-West'),
+    sslValid: project.sslValid ?? true,
+    uptimePercent: project.uptimePercent ?? getUptimePercent(project, '7d'),
+    lastIncident: project.lastIncident ?? project.logs.find((log) => log.type !== 'up')?.timestamp ?? 'No incidents',
+    incidentCount: project.incidentCount ?? project.logs.filter((log) => log.type !== 'up').length,
+  };
 }
 
 export function projectSummary(projects: Project[]) {

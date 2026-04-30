@@ -28,7 +28,7 @@ export function Input({
       ) : null}
       <div
         className={cn(
-          'flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 transition-colors focus-within:border-success/60 focus-within:bg-white/[0.06]',
+          'flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 transition-colors focus-within:border-info/60 focus-within:bg-white/[0.06]',
           error && 'border-danger/60 focus-within:border-danger/60',
         )}
       >

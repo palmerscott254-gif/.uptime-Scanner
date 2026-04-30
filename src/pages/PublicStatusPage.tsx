@@ -1,4 +1,4 @@
-import { CheckCircle2, Globe, RefreshCcw, ServerCrash } from 'lucide-react';
+import { CheckCircle2, Clock3, Globe, RefreshCcw, ServerCrash, Wrench } from 'lucide-react';
 import type { Project } from '../types';
 import { projectSummary } from '../utils';
 import { StatusBadge } from '../components/StatusBadge';
@@ -72,9 +72,16 @@ export function PublicStatusPage({ projects }: PublicStatusPageProps) {
               <RefreshCcw className="h-5 w-5" />
               <h3 className="text-lg font-semibold text-white">Recent incident summary</h3>
             </div>
-            <p className="mt-3 text-sm text-gray-400">
-              No open incidents. The last issue resolved automatically after a brief timeout spike.
-            </p>
+            <div className="mt-4 space-y-3">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                <p className="text-sm font-medium text-white">API latency spike mitigated</p>
+                <p className="mt-1 text-xs text-gray-500">Resolved 2h ago • Duration 14m</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                <p className="text-sm font-medium text-white">No open incidents</p>
+                <p className="mt-1 text-xs text-gray-500">All services operating within SLA.</p>
+              </div>
+            </div>
           </div>
 
           <div className="rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft">
@@ -85,6 +92,20 @@ export function PublicStatusPage({ projects }: PublicStatusPageProps) {
             <p className="mt-3 text-sm text-gray-400">
               If an outage occurs, subscribers receive a branded update with timelines, remediation notes, and recovery details.
             </p>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft">
+            <div className="flex items-center gap-2 text-warning">
+              <Wrench className="h-5 w-5" />
+              <h3 className="text-lg font-semibold text-white">Scheduled maintenance</h3>
+            </div>
+            <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+              <p className="text-sm font-medium text-white">Edge network optimization</p>
+              <p className="mt-1 inline-flex items-center gap-1 text-xs text-gray-500">
+                <Clock3 className="h-3.5 w-3.5" />
+                Planned: Sunday, 02:00–03:00 UTC
+              </p>
+            </div>
           </div>
         </div>
       </section>
