@@ -161,7 +161,7 @@ function createLogs(name, status) {
   ];
 }
 
-function createProject({ name, url, interval, email }) {
+function createProject({ name, url, interval, email, keepAlive, retryThreshold }) {
   const normalizedUrl = normalizeUrl(url);
   const safeName = name?.trim() || extractProjectName(normalizedUrl);
   const id = slugify(safeName) || `project-${Date.now()}`;
@@ -177,7 +177,8 @@ function createProject({ name, url, interval, email }) {
     interval,
     email,
     alertsEnabled: true,
-    keepAlive: false,
+    keepAlive: Boolean(keepAlive),
+    retryThreshold: Number(retryThreshold) || 2,
     tags: ['Custom', 'New'],
     uptimeSeries: createSeries(seed),
     responseSeries: createSeries(seed + 1),
@@ -281,6 +282,8 @@ const server = http.createServer(async (req, res) => {
         url: body.url,
         interval: Number(body.interval) || 1,
         email: body.email || '',
+        keepAlive: body.keepAlive,
+        retryThreshold: body.retryThreshold,
       });
       projects.unshift(created);
       await writeProjects(projects);

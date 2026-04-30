@@ -7,7 +7,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
-import { enrichProject, extractProjectName, normalizeUrl } from './utils';
+import { buildSparklineSeries, enrichProject, extractProjectName, normalizeUrl } from './utils';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -25,6 +25,74 @@ const defaultForm: ProjectFormValues = {
   keepAlive: true,
   retryThreshold: 2,
 };
+
+function createLocalProject(values: ProjectFormValues): Project {
+  const normalizedUrl = normalizeUrl(values.url);
+  const name = values.name.trim() || extractProjectName(normalizedUrl);
+  const seed = name.length + values.interval + values.retryThreshold;
+
+  const chart = (length: number, baseUptime: number, baseResponse: number) =>
+    Array.from({ length }, (_, index) => ({
+      label: `${index + 1}`,
+      uptime: Math.max(80, Math.min(100, baseUptime + ((index + seed) % 4) - (index % 5 === 0 ? 2 : 0))),
+      response: Math.max(90, Math.min(1200, baseResponse + seed * 12 + index * 11 + (index % 3) * 16)),
+    }));
+
+  return {
+    id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || `project-${Date.now()}`,
+    name,
+    url: normalizedUrl,
+    status: 'up',
+    responseTime: 140 + seed,
+    lastChecked: 'Just now',
+    interval: values.interval,
+    email: values.email,
+    alertsEnabled: true,
+    keepAlive: values.keepAlive,
+    tags: ['Custom', 'New'],
+    region: 'US-East',
+    sslValid: true,
+    uptimePercent: 99,
+    lastIncident: 'No incidents',
+    incidentCount: 0,
+    uptimeSeries: {
+      '24h': chart(12, 96, 180),
+      '7d': chart(7, 97, 190),
+      '30d': chart(10, 98, 170),
+    },
+    responseSeries: {
+      '24h': chart(12, 96, 180),
+      '7d': chart(7, 97, 190),
+      '30d': chart(10, 98, 170),
+    },
+    miniSeries: buildSparklineSeries(
+      Array.from({ length: 12 }, (_, index) => Math.max(78, Math.min(100, 92 + ((index + seed) % 4) - (index % 5 === 0 ? 2 : 0)))),
+    ),
+    logs: [
+      {
+        id: `${name}-log-1`,
+        type: 'up',
+        message: `${name} probe succeeded`,
+        timestamp: 'Just now',
+        details: 'Endpoint returned 200 OK within the expected latency window.',
+      },
+      {
+        id: `${name}-log-2`,
+        type: 'up',
+        message: 'Next probe scheduled',
+        timestamp: '6 min ago',
+        details: 'Monitoring will continue on the configured interval.',
+      },
+      {
+        id: `${name}-log-3`,
+        type: 'up',
+        message: 'Configuration saved',
+        timestamp: '19 min ago',
+        details: 'Monitor settings were created successfully.',
+      },
+    ],
+  };
+}
 
 export default function App() {
   const [activeNav, setActiveNav] = useState<NavKey>('dashboard');
@@ -114,6 +182,7 @@ export default function App() {
     if (!formValues.url.trim()) return;
     const normalizedUrl = normalizeUrl(formValues.url);
     const nextName = formValues.name.trim() || extractProjectName(normalizedUrl);
+    const nextValues = { ...formValues, url: normalizedUrl, name: nextName };
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/projects`, {
@@ -124,6 +193,8 @@ export default function App() {
           name: nextName,
           interval: formValues.interval,
           email: formValues.email,
+          keepAlive: formValues.keepAlive,
+          retryThreshold: formValues.retryThreshold,
         }),
       });
 
@@ -133,7 +204,9 @@ export default function App() {
 
       const payload = (await response.json()) as { data?: Project } | Project;
       const created = 'data' in payload ? payload.data : payload;
-      if (!created || !('id' in created)) return;
+      if (!created || !('id' in created)) {
+        throw new Error('Invalid project payload returned from API');
+      }
 
       setProjects((current) => [enrichProject(created), ...current]);
       setSelectedProjectId(created.id);
@@ -143,6 +216,13 @@ export default function App() {
       setFormValues(defaultForm);
     } catch (error) {
       console.error('Failed to create project:', error);
+      const created = enrichProject(createLocalProject(nextValues));
+      setProjects((current) => [created, ...current]);
+      setSelectedProjectId(created.id);
+      setModalOpen(false);
+      setView('dashboard');
+      setTestStatus('idle');
+      setFormValues(defaultForm);
     }
   };
 

@@ -33,6 +33,7 @@ export interface Project {
   email: string;
   alertsEnabled: boolean;
   keepAlive: boolean;
+  retryThreshold?: number;
   tags: string[];
   region?: string;
   sslValid?: boolean;
