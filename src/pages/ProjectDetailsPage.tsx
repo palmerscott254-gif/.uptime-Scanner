@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Globe, Mail, MapPin, ShieldCheck, TimerReset, Webhook } from 'lucide-react';
+import { ArrowLeft, Globe, Mail, MapPin, ShieldCheck, TimerReset, Webhook, AlertTriangle } from 'lucide-react';
 import type { Project, TimeRange } from '../types';
 import { formatResponseTime, statusMeta } from '../utils';
 import { Button } from '../components/ui/Button';

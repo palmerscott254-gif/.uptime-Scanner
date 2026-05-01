@@ -8,7 +8,8 @@ interface MonitorTableProps {
   onTogglePause: (p: Project) => void;
   onView: (p: Project) => void;
   search?: string;
-  filterStatus?: MonitorStatus | 'all';
+  // include 'paused' as a special filter state
+  filterStatus?: MonitorStatus | 'all' | 'paused';
 }
 
 export function MonitorTable({ projects, onEdit, onDelete, onTogglePause, onView, search = '', filterStatus = 'all' }: MonitorTableProps) {
