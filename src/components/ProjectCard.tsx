@@ -1,4 +1,4 @@
-import { ChevronRight, Clock3, Globe, ListChecks, MapPin, ShieldCheck } from 'lucide-react';
+import { ChevronRight, Clock3, Globe, ListChecks, MapPin, ShieldCheck, Trash2 } from 'lucide-react';
 import type { Project } from '../types';
 import { cn, formatResponseTime, statusMeta } from '../utils';
 import { Button } from './ui/Button';
@@ -9,6 +9,7 @@ interface ProjectCardProps {
   project: Project;
   onView: (project: Project) => void;
   onLogs: (project: Project) => void;
+  onDelete?: (project: Project) => void;
 }
 
 export function ProjectCard({ project, onView, onLogs }: ProjectCardProps) {
@@ -82,6 +83,17 @@ export function ProjectCard({ project, onView, onLogs }: ProjectCardProps) {
           >
             Logs
           </Button>
+            {onDelete ? (
+              <Button
+                variant="danger"
+                size="sm"
+                icon={<Trash2 className="h-4 w-4" />}
+                onClick={() => onDelete(project)}
+                aria-label={`Delete ${project.name}`}
+              >
+                Delete
+              </Button>
+            ) : null}
         </div>
 
         <div className="flex items-center justify-between border-t border-white/8 pt-4 text-sm text-gray-400">

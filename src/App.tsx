@@ -9,6 +9,8 @@ import { PublicStatusPage } from './pages/PublicStatusPage';
 import AlertsPage from './pages/AlertsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
+import { ConfirmModal } from './components/ui/Modal';
+import { Button } from './components/ui/Button';
 import { buildSparklineSeries, enrichProject, extractProjectName, normalizeUrl } from './utils';
 import { mockProjects } from './data/mock';
 
@@ -113,6 +115,8 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [formValues, setFormValues] = useState<ProjectFormValues>(defaultForm);
   const [testStatus, setTestStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [confirmDelete, setConfirmDelete] = useState<{ open: boolean; projectId?: string; projectName?: string }>({ open: false });
+  const [undoToast, setUndoToast] = useState<{ show: boolean; project?: Project | null }>({ show: false, project: null });
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -133,6 +137,16 @@ export default function App() {
     };
 
     fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    function onRequest(e: Event) {
+      const detail = (e as CustomEvent).detail as { id?: string; name?: string } | undefined;
+      if (!detail?.id) return;
+      setConfirmDelete({ open: true, projectId: detail.id, projectName: detail.name });
+    }
+    window.addEventListener('request-delete', onRequest as EventListener);
+    return () => window.removeEventListener('request-delete', onRequest as EventListener);
   }, []);
 
   useEffect(() => {
@@ -243,6 +257,37 @@ export default function App() {
     setView('details');
   };
 
+  const handleRequestDelete = (project: Project) => {
+    setConfirmDelete({ open: true, projectId: project.id, projectName: project.name });
+  };
+
+  const performDelete = async (projectId?: string) => {
+    if (!projectId) return;
+    // Optimistic UI removal
+    const removed = projects.find((p) => p.id === projectId) ?? null;
+    setProjects((current) => current.filter((p) => p.id !== projectId));
+    setConfirmDelete({ open: false });
+    setUndoToast({ show: true, project: removed });
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete');
+      // persist handled by backend
+    } catch (err) {
+      console.error('Delete failed, rolling back', err);
+      // rollback
+      if (removed) setProjects((current) => [removed!, ...current]);
+      setUndoToast({ show: false, project: null });
+    }
+  };
+
+  const handleUndo = () => {
+    if (!undoToast.project) return;
+    // Re-create the project locally (best-effort)
+    setProjects((current) => [undoToast.project as Project, ...current]);
+    setUndoToast({ show: false, project: null });
+  };
+
   const handleNavChange = (key: NavKey) => {
     setActiveNav(key);
     if (key === 'dashboard') {
@@ -296,6 +341,7 @@ export default function App() {
         onAddProject={openModal}
         onViewProject={handleViewProject}
         onLogsProject={handleLogsProject}
+        onDeleteProject={handleRequestDelete}
       />
     );
   };
@@ -330,6 +376,36 @@ export default function App() {
         testStatus={testStatus}
         onSubmit={handleCreateProject}
       />
+
+      {/* Confirm delete modal */}
+      <ConfirmModal
+        open={confirmDelete.open}
+        title={`Delete monitor${confirmDelete.projectName ? ` — ${confirmDelete.projectName}` : ''}`}
+        description="This will permanently remove the monitor and its history."
+        onClose={() => setConfirmDelete({ open: false })}
+        onConfirm={() => performDelete(confirmDelete.projectId)}
+        confirmLabel="Delete"
+      >
+        <p className="text-sm text-gray-400">Are you sure you want to delete this monitor? This action cannot be undone.</p>
+      </ConfirmModal>
+
+      {/* Undo toast */}
+      {undoToast.show ? (
+        <div className="fixed right-6 bottom-6 z-50">
+          <div className="rounded-2xl border border-white/10 bg-app-card px-4 py-3 shadow-lg">
+            <div className="flex items-center gap-4">
+              <div>
+                <p className="text-sm font-medium">Monitor deleted</p>
+                <p className="text-xs text-gray-400">You can undo this action.</p>
+              </div>
+              <div className="ml-4 flex items-center gap-2">
+                <Button variant="secondary" size="sm" onClick={handleUndo}>Undo</Button>
+                <Button variant="ghost" size="sm" onClick={() => setUndoToast({ show: false, project: null })}>Dismiss</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -10,6 +10,11 @@ interface ModalProps {
   children: ReactNode;
 }
 
+interface ConfirmModalProps extends ModalProps {
+  onConfirm?: () => void;
+  confirmLabel?: string;
+}
+
 export function Modal({ open, title, description, onClose, children }: ModalProps) {
   if (!open) return null;
 
@@ -32,6 +37,31 @@ export function Modal({ open, title, description, onClose, children }: ModalProp
           </Button>
         </div>
         <div className="max-h-[calc(100vh-8rem)] overflow-y-auto px-6 py-6">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+export function ConfirmModal({ open, title, description, onClose, children, onConfirm, confirmLabel = 'Confirm' }: ConfirmModalProps) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+      <button type="button" className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity" aria-label="Close modal overlay" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft transition-all duration-300">
+        <div className="flex items-start justify-between gap-4 border-b border-white/8 px-6 py-5">
+          <div>
+            <h2 className="text-xl font-semibold text-white">{title}</h2>
+            {description ? <p className="mt-1 text-sm text-gray-400">{description}</p> : null}
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose} icon={<X className="h-4 w-4" />} />
+        </div>
+        <div className="max-h-[calc(100vh-8rem)] overflow-y-auto px-6 py-6">{children}
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="secondary" onClick={onClose}>Cancel</Button>
+            <Button variant="danger" onClick={onConfirm}>{confirmLabel}</Button>
+          </div>
+        </div>
       </div>
     </div>
   );

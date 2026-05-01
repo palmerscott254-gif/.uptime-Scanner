@@ -257,7 +257,7 @@ async function probeUrl(url) {
 
 const server = http.createServer(async (req, res) => {
   if (!req.url || !req.method) {
-    sendJson(res, 400, { error: 'Bad request' });
+    sendJson(req, res, 400, { error: 'Bad request' });
     return;
   }
 

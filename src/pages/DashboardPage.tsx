@@ -22,6 +22,7 @@ interface DashboardPageProps {
   onAddProject: () => void;
   onViewProject: (project: Project) => void;
   onLogsProject: (project: Project) => void;
+  onDeleteProject: (project: Project) => void;
 }
 
 export function DashboardPage({
@@ -171,6 +172,7 @@ export function DashboardPage({
               project={project}
               onView={onViewProject}
               onLogs={onLogsProject}
+              onDelete={onDeleteProject}
             />
           ))}
         </section>

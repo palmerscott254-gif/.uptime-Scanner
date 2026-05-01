@@ -42,6 +42,15 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
             <Button variant="ghost" size="sm" icon={<ArrowLeft className="h-4 w-4" />} onClick={onBack}>
               Back to dashboard
             </Button>
+            <div className="mt-2">
+              <Button variant="danger" size="sm" icon={<AlertTriangle className="h-4 w-4" />} onClick={() => {
+                // delegate to global delete flow via custom event
+                const ev = new CustomEvent('request-delete', { detail: { id: project.id, name: project.name } });
+                window.dispatchEvent(ev as Event);
+              }}>
+                Delete monitor
+              </Button>
+            </div>
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className="text-3xl font-semibold tracking-tight text-white">{project.name}</h2>
