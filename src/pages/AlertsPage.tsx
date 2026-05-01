@@ -11,9 +11,10 @@ import { Badge } from '../components/ui/Badge';
 interface AlertsPageProps {
   projects: Project[];
   search: string;
+  onCreateAlert?: () => void;
 }
 
-export default function AlertsPage({ projects, search }: AlertsPageProps) {
+export default function AlertsPage({ projects, search, onCreateAlert }: AlertsPageProps) {
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'resolved'>('all');
 
   const summary = projectSummary(projects);
@@ -40,7 +41,12 @@ export default function AlertsPage({ projects, search }: AlertsPageProps) {
             <p className="mt-2 text-gray-400">Monitor critical alerts across your systems.</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="primary">Settings</Button>
+            <Button variant="secondary" onClick={() => setFilter('all')}>
+              Notifications
+            </Button>
+            <Button variant="primary" onClick={onCreateAlert}>
+              Create alert
+            </Button>
           </div>
         </div>
       </section>

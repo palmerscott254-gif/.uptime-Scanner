@@ -15,7 +15,6 @@ import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, Time
 import { ConfirmModal } from './components/ui/Modal';
 import { Button } from './components/ui/Button';
 import { buildSparklineSeries, enrichProject, extractProjectName, normalizeUrl } from './utils';
-import { mockProjects } from './data/mock';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -134,9 +133,8 @@ export default function App() {
         setSelectedProjectId((current) => current || nextProjects[0]?.id || '');
       } catch (error) {
         console.error('Failed to load projects:', error);
-        // Fallback to local seed data when the API is unavailable
-        setProjects(mockProjects.map(enrichProject));
-        setSelectedProjectId((current) => current || mockProjects[0]?.id || '');
+        setProjects([]);
+        setSelectedProjectId('');
       } finally {
         setLoading(false);
       }
@@ -351,7 +349,7 @@ export default function App() {
     }
 
     if (activeNav === 'alerts') {
-      return <AlertsPage projects={projects} search={search} />;
+      return <AlertsPage projects={projects} search={search} onCreateAlert={openModal} />;
     }
 
     if (activeNav === 'analytics') {
