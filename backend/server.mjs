@@ -56,11 +56,23 @@ async function ensureDataFile() {
 async function readProjects() {
   await ensureDataFile();
   const raw = await fs.readFile(DATA_FILE, 'utf8');
-  const parsed = JSON.parse(raw || '[]');
-  if (Array.isArray(parsed) && parsed.length) {
-    return parsed;
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    // if file contains non-array, reset to empty
+    await writeProjects([]);
+    return [];
+  } catch (err) {
+    console.error('Failed to parse projects.json, resetting to empty array:', err);
+    // attempt to repair by writing an empty array
+    try {
+      await writeProjects([]);
+    } catch (writeErr) {
+      console.error('Failed to write repair projects.json:', writeErr);
+    }
+    return [];
   }
-  return [];
 }
 
 async function writeProjects(projects) {

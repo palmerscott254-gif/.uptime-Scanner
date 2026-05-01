@@ -123,8 +123,17 @@ export default function App() {
     const fetchProjects = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/projects`);
-        const data = (await response.json()) as { data?: Project[] } | Project[];
-        const nextProjects = Array.isArray(data) ? data : data.data ?? [];
+        const text = await response.text();
+        if (!response.ok) {
+          console.error('API error', response.status, text);
+          throw new Error(`API returned status ${response.status}`);
+        }
+        if (!text) {
+          console.error('Empty response from API');
+          throw new Error('Empty response from API');
+        }
+        const parsed = JSON.parse(text) as { data?: Project[] } | Project[];
+        const nextProjects = Array.isArray(parsed) ? parsed : parsed.data ?? [];
         setProjects(nextProjects.map(enrichProject));
         setSelectedProjectId((current) => current || nextProjects[0]?.id || '');
       } catch (error) {

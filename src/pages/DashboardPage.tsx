@@ -39,6 +39,7 @@ export function DashboardPage({
   onAddProject,
   onViewProject,
   onLogsProject,
+  onDeleteProject,
 }: DashboardPageProps) {
   const stats = projectSummary(projects);
   const uptime = stats.total ? Math.round((stats.online / stats.total) * 100) : 0;
