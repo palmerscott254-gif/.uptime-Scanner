@@ -1,11 +1,10 @@
-import { AlertTriangle, ArrowDownUp, Clock3, Filter, Search, ShieldCheck, TrendingUp } from 'lucide-react';
+import { AlertTriangle, ArrowDownUp, Clock3, Filter, ShieldCheck, TrendingUp } from 'lucide-react';
 import type { MonitorStatus, Project, SortKey } from '../types';
 import { averageResponse, cn, getUptimePercent, projectSummary } from '../utils';
 import { ProjectCard } from '../components/ProjectCard';
 import { StatsCard } from '../components/StatsCard';
 import { RecentIncidents } from '../components/dashboard/RecentIncidents';
 import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
 import { DashboardSkeleton } from '../components/Skeletons';
 
 interface DashboardPageProps {
@@ -23,7 +22,6 @@ interface DashboardPageProps {
   onViewProject: (project: Project) => void;
   onLogsProject: (project: Project) => void;
   onDeleteProject: (project: Project) => void;
-  onKpiClick?: (key: string) => void;
 }
 
 export function DashboardPage({
@@ -101,7 +99,10 @@ export function DashboardPage({
           icon={ShieldCheck}
           accentClassName="bg-info/10 text-info"
           trend="up"
-          onClick={() => onKpiClick?.('monitors')}
+          onClick={() => {
+            const ev = new CustomEvent('navigate-monitors', { detail: { filter: 'all' } });
+            window.dispatchEvent(ev as Event);
+          }}
         />
         <StatsCard
           label="Online"
@@ -110,7 +111,11 @@ export function DashboardPage({
           icon={TrendingUp}
           accentClassName="bg-success/10 text-success"
           trend="up"
-          onClick={() => onKpiClick?.('online')}
+          onClick={() => {
+            onStatusFilterChange('up');
+            const ev = new CustomEvent('navigate-monitors', { detail: { filter: 'up' } });
+            window.dispatchEvent(ev as Event);
+          }}
         />
         <StatsCard
           label="Down"
@@ -119,7 +124,11 @@ export function DashboardPage({
           icon={AlertTriangle}
           accentClassName="bg-danger/10 text-danger"
           trend="down"
-          onClick={() => onKpiClick?.('down')}
+          onClick={() => {
+            onStatusFilterChange('down');
+            const ev = new CustomEvent('navigate-monitors', { detail: { filter: 'down' } });
+            window.dispatchEvent(ev as Event);
+          }}
         />
         <StatsCard
           label="Avg Response Time"
@@ -131,16 +140,34 @@ export function DashboardPage({
         />
       </section>
 
-      <section className="grid gap-5 md:grid-cols-3">
-        <div className="md:col-span-2">{/* Executive summary charts and highlights (kept intentionally concise) */}</div>
-        <div>{/* reserve right column for contextual items (moved incidents to bottom) */}</div>
+      <section className="space-y-4">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Projects</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">New projects and monitored services</h2>
+          </div>
+          <Button variant="secondary" onClick={() => window.dispatchEvent(new CustomEvent('navigate-projects'))}>
+            View all projects
+          </Button>
+        </div>
+
+        {loading ? null : filtered.length ? (
+          <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {filtered.slice(0, 6).map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onView={onViewProject}
+                onLogs={onLogsProject}
+                onDelete={onDeleteProject}
+              />
+            ))}
+          </section>
+        ) : null}
       </section>
 
       <section className="flex flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft lg:flex-row lg:items-end lg:justify-between">
-        <div className="grid flex-1 gap-4 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
-          <div>
-            <p className="text-sm text-gray-400">Use the global search in the top bar to find projects, monitors, alerts, and incidents.</p>
-          </div>
+        <div className="grid flex-1 gap-4 md:grid-cols-[1fr_0.8fr]">
           <label className="block space-y-2">
             <span className="text-sm font-medium text-gray-300">Filter by status</span>
             <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-1">
@@ -175,14 +202,18 @@ export function DashboardPage({
           </label>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" icon={<ArrowDownUp className="h-4 w-4" />} onClick={() => onSortChange(sortBy === 'uptime' ? 'response' : 'uptime')}>
+          <Button
+            variant="secondary"
+            icon={<ArrowDownUp className="h-4 w-4" />}
+            onClick={() => onSortChange(sortBy === 'uptime' ? 'response' : 'uptime')}
+          >
             Sort: {sortBy === 'uptime' ? 'Uptime' : 'Response'}
           </Button>
           <Button variant="secondary" icon={<Filter className="h-4 w-4" />} onClick={() => onStatusFilterChange('all')}>
             Reset Filters
           </Button>
           <Button variant="primary" onClick={onAddProject}>
-            Add Project
+            Add Monitor
           </Button>
         </div>
       </section>
@@ -190,21 +221,11 @@ export function DashboardPage({
       {loading ? (
         <DashboardSkeleton />
       ) : filtered.length ? (
-        <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onView={onViewProject}
-              onLogs={onLogsProject}
-              onDelete={onDeleteProject}
-            />
-          ))}
-        </section>
+        <></>
       ) : (
         <section className="rounded-[1.75rem] border border-dashed border-white/15 bg-app-card/70 p-10 text-center shadow-soft">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-white/[0.04] text-success ring-1 ring-white/10">
-            <Search className="h-8 w-8" />
+            <ShieldCheck className="h-8 w-8" />
           </div>
           <h3 className="mt-5 text-2xl font-semibold text-white">No monitors match your filters</h3>
           <p className="mx-auto mt-2 max-w-xl text-gray-400">
@@ -221,9 +242,7 @@ export function DashboardPage({
         </section>
       )}
 
-      <section>
-        <RecentIncidents projects={projects} />
-      </section>
+      <RecentIncidents projects={projects} limit={10} />
     </div>
   );
 }

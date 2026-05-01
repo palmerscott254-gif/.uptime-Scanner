@@ -10,17 +10,11 @@ interface NotificationItem {
   time?: string;
 }
 
-const sample: NotificationItem[] = [
-  { id: 'n1', title: 'Payment API latency spike', description: 'Response time exceeded 500ms', time: '2m' },
-  { id: 'n2', title: 'New user signup goal reached', description: 'Signup rate up 12%', time: '1h' },
-  { id: 'n3', title: 'Deployment succeeded', description: 'Frontend deployed to production', time: '3h' },
-];
-
 interface NotificationsDropdownProps {
   items?: NotificationItem[];
 }
 
-export function NotificationsDropdown({ items }: NotificationsDropdownProps) {
+export function NotificationsDropdown({ items = [] }: NotificationsDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -47,11 +41,11 @@ export function NotificationsDropdown({ items }: NotificationsDropdownProps) {
           </div>
 
           <ul className="mt-3 space-y-2 max-h-64 overflow-y-auto">
-            {(items ?? sample).map((n) => (
+            {(items.length ? items : [{ id: 'empty', title: 'No notifications yet', description: 'New incidents and system updates will appear here.', time: 'Now' }]).map((n) => (
               <li key={n.id} className="rounded-lg p-2 hover:bg-white/3">
                 <p className="text-sm font-medium">{n.title}</p>
                 <p className="text-xs text-gray-400">{n.description}</p>
-                <p className="mt-1 text-xs text-gray-500">{n.time} ago</p>
+                <p className="mt-1 text-xs text-gray-500">{n.time === 'Now' ? n.time : `${n.time} ago`}</p>
               </li>
             ))}
           </ul>

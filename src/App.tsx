@@ -5,9 +5,11 @@ import { Topbar } from './components/layout/Topbar';
 import { NAV_ITEMS, type NavKey } from './constants/navigation';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
+import ProjectsPage from './pages/ProjectsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
 import AlertsPage from './pages/AlertsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import SettingsPage from './pages/SettingsPage';
 import StatusPage from './pages/StatusPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
 import { ConfirmModal } from './components/ui/Modal';
@@ -16,12 +18,6 @@ import { buildSparklineSeries, enrichProject, extractProjectName, normalizeUrl }
 import { mockProjects } from './data/mock';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
-
-// Production implementation notes:
-// - Replace mock data generators with API calls to fetch real metrics
-// - Use WebSockets or polling for real-time status updates
-// - Implement proper error handling and retry logic
-// - See /api/README.md for backend API documentation
 
 const defaultForm: ProjectFormValues = {
   url: '',
@@ -138,7 +134,7 @@ export default function App() {
         setSelectedProjectId((current) => current || nextProjects[0]?.id || '');
       } catch (error) {
         console.error('Failed to load projects:', error);
-        // Fallback to local mock data for offline / demo mode
+        // Fallback to local seed data when the API is unavailable
         setProjects(mockProjects.map(enrichProject));
         setSelectedProjectId((current) => current || mockProjects[0]?.id || '');
       } finally {
@@ -155,8 +151,30 @@ export default function App() {
       if (!detail?.id) return;
       setConfirmDelete({ open: true, projectId: detail.id, projectName: detail.name });
     }
+    function onNavigate(e: Event) {
+      const detail = (e as CustomEvent).detail as { filter?: string } | undefined;
+      if (detail?.filter && detail.filter !== 'all') {
+        setActiveNav('status');
+        setStatusFilter(detail.filter as MonitorStatus);
+        setView('status');
+      } else if (detail?.filter === 'all') {
+        setActiveNav('status');
+        setStatusFilter('all');
+        setView('status');
+      }
+    }
+    function onNavigateProjects() {
+      setActiveNav('projects');
+      setView('dashboard');
+    }
     window.addEventListener('request-delete', onRequest as EventListener);
-    return () => window.removeEventListener('request-delete', onRequest as EventListener);
+    window.addEventListener('navigate-monitors', onNavigate as EventListener);
+    window.addEventListener('navigate-projects', onNavigateProjects as EventListener);
+    return () => {
+      window.removeEventListener('request-delete', onRequest as EventListener);
+      window.removeEventListener('navigate-monitors', onNavigate as EventListener);
+      window.removeEventListener('navigate-projects', onNavigateProjects as EventListener);
+    };
   }, []);
 
   useEffect(() => {
@@ -257,13 +275,13 @@ export default function App() {
 
   const handleViewProject = (project: Project) => {
     setSelectedProjectId(project.id);
-    setActiveNav('dashboard');
+    setActiveNav('projects');
     setView('details');
   };
 
   const handleLogsProject = (project: Project) => {
     setSelectedProjectId(project.id);
-    setActiveNav('dashboard');
+    setActiveNav('projects');
     setView('details');
   };
 
@@ -300,49 +318,48 @@ export default function App() {
 
   const handleNavChange = (key: NavKey) => {
     setActiveNav(key);
+    setView('dashboard');
     if (key === 'dashboard') {
-      setView('dashboard');
+      return;
+    }
+    if (key === 'projects') {
       return;
     }
     if (key === 'status') {
       setView('status');
       return;
     }
-    setView('dashboard');
-  };
-
-  const handleKpiClick = (key: string) => {
-    if (key === 'monitors') {
-      setActiveNav('status');
-      setView('status');
-      return;
-    }
-    if (key === 'online') {
-      setActiveNav('status');
-      setView('status');
-      setStatusFilter('up');
-      return;
-    }
-    if (key === 'down') {
-      setActiveNav('status');
-      setView('status');
-      setStatusFilter('down');
-      return;
-    }
-    if (key === 'alerts') {
-      setActiveNav('alerts');
-      setView('dashboard');
-      return;
-    }
   };
 
   const renderView = () => {
+    if (activeNav === 'projects') {
+      if (view === 'details' && selectedProject) {
+        return <ProjectDetailsPage project={selectedProject} range={range} onRangeChange={setRange} onBack={() => setView('dashboard')} />;
+      }
+
+      return (
+        <ProjectsPage
+          projects={projects}
+          loading={loading}
+          search={search}
+          onViewProject={handleViewProject}
+          onLogsProject={handleLogsProject}
+          onDeleteProject={handleRequestDelete}
+          onAddProject={openModal}
+        />
+      );
+    }
+
     if (activeNav === 'alerts') {
-      return <AlertsPage projects={projects} />;
+      return <AlertsPage projects={projects} search={search} />;
     }
 
     if (activeNav === 'analytics') {
       return <AnalyticsPage projects={projects} />;
+    }
+
+    if (activeNav === 'settings') {
+      return <SettingsPage />;
     }
 
     if (view === 'details' && selectedProject) {
@@ -374,8 +391,6 @@ export default function App() {
             setProjects((current) => current.map((proj) => (proj.id === updated.id ? updated : proj)));
             fetch(`${API_BASE_URL}/api/projects/${updated.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
           }}
-          search={search}
-          onSearchChange={setSearch}
         />
       );
     }
@@ -396,7 +411,6 @@ export default function App() {
         onViewProject={handleViewProject}
         onLogsProject={handleLogsProject}
         onDeleteProject={handleRequestDelete}
-        onKpiClick={handleKpiClick}
       />
     );
   };
@@ -414,10 +428,9 @@ export default function App() {
 
       <div className={sidebarCollapsed ? 'lg:pl-[84px]' : 'lg:pl-[264px]'}>
         <Topbar
-          search={(activeNav === 'dashboard' && view === 'dashboard') || activeNav === 'status' ? search : undefined}
-          onSearchChange={(activeNav === 'dashboard' && view === 'dashboard') || activeNav === 'status' ? setSearch : undefined}
-          onAddProject={activeNav === 'dashboard' && view === 'dashboard' ? openModal : activeNav === 'status' ? openModal : undefined}
-          projects={projects}
+          search={search}
+          onSearchChange={setSearch}
+          onAddProject={activeNav === 'settings' ? undefined : openModal}
         />
 
         <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">{renderView()}</main>

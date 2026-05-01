@@ -1,4 +1,4 @@
-import { ChevronRight, Clock3, Globe, ListChecks, MapPin, ShieldCheck, Trash2 } from 'lucide-react';
+import { ChevronRight, Globe, MapPin, ShieldCheck, Trash2 } from 'lucide-react';
 import type { Project } from '../types';
 import { cn, formatResponseTime, statusMeta } from '../utils';
 import { Button } from './ui/Button';
@@ -17,15 +17,12 @@ export function ProjectCard({ project, onView, onLogs, onDelete }: ProjectCardPr
 
   return (
     <article
-      role="button"
-      tabIndex={0}
-      onClick={() => onView(project)}
-      onKeyDown={(e) => ((e.key === 'Enter' || e.key === ' ') && onView(project))}
       className={cn(
-        'group overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-app-cardAlt cursor-pointer',
-        'border-l-4',
+        'group overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-app-cardAlt',
+        'border-l-4 cursor-pointer',
         meta.border,
       )}
+      onClick={() => onView(project)}
     >
       <div className={cn('h-1 w-full bg-gradient-to-r', meta.accent)} />
       <div className="space-y-5 p-5">
@@ -72,40 +69,39 @@ export function ProjectCard({ project, onView, onLogs, onDelete }: ProjectCardPr
 
         <div className="flex flex-wrap gap-3 pt-1">
           <Button
-            variant="secondary"
+            variant="primary"
             size="sm"
-            icon={<ListChecks className="h-4 w-4" />}
-            onClick={(e: React.MouseEvent) => {
+            icon={<ChevronRight className="h-4 w-4" />}
+            onClick={(e) => {
               e.stopPropagation();
-              onLogs(project);
+              onView(project);
             }}
+            className="flex-1"
           >
-            Logs
+            View Details
           </Button>
-            {onDelete ? (
-              <Button
-                variant="danger"
-                size="sm"
-                icon={<Trash2 className="h-4 w-4" />}
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  onDelete(project);
-                }}
-                aria-label={`Delete ${project.name}`}
-              >
-                Delete
-              </Button>
-            ) : null}
+          {onDelete ? (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={<Trash2 className="h-4 w-4" />}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(project);
+              }}
+              aria-label={`Delete ${project.name}`}
+            >
+              Delete
+            </Button>
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between border-t border-white/8 pt-4 text-sm text-gray-400">
           <div className="flex items-center gap-2">
-            <Clock3 className="h-4 w-4" />
-            <span>Checks every {project.interval} min</span>
+            <ShieldCheck className="h-4 w-4" />
+            <span>{project.region ?? 'Global'}</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-500 transition-colors group-hover:text-gray-300">
-            <span>{project.tags.map((tag) => `#${tag}`).join(' ')}</span>
-          </div>
+          <span className="text-xs">{project.uptimePercent ?? 99}% uptime</span>
         </div>
       </div>
     </article>

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Card } from '../components/ui/Card';
 import { StatsCard } from '../components/StatsCard';
 import { RecentIncidents } from '../components/dashboard/RecentIncidents';
-import { averageResponse, buildSparklineSeries, getUptimePercent, projectSummary } from '../utils';
+import { averageResponse, getUptimePercent, projectSummary } from '../utils';
 import type { Project } from '../types';
 import { ShieldCheck, Clock3, TrendingUp } from 'lucide-react';
 
@@ -15,18 +15,17 @@ export default function AnalyticsPage({ projects }: AnalyticsPageProps) {
   const summary = projectSummary(projects);
   const [range] = useState('7d');
 
-  const uptimeOverall = Math.round((projects.reduce((s, p) => s + (p.uptimePercent ?? getUptimePercent(p, '7d')), 0) / projects.length) * 100) / 100;
+  const uptimeOverall = projects.length ? Math.round((projects.reduce((s, p) => s + (p.uptimePercent ?? getUptimePercent(p, '7d')), 0) / projects.length) * 100) / 100 : 0;
   const avgResponse = averageResponse(projects);
 
   const incidentTrends = useMemo(() => {
-    // build a 7-day trend from mock project logs
     const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
     return days.map((d, i) => ({ day: d, incidents: projects.reduce((s, p) => s + (p.logs[i] && p.logs[i].type !== 'up' ? 1 : 0), 0) }));
   }, [projects]);
 
   const responseBars = useMemo(() => {
     const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    return days.map((d, i) => ({ day: d, response: Math.round(projects.reduce((s, p) => s + (p.responseSeries['7d'][i]?.response ?? 0), 0) / projects.length) }));
+    return days.map((d, i) => ({ day: d, response: Math.round(projects.reduce((s, p) => s + (p.responseSeries['7d'][i]?.response ?? 0), 0) / (projects.length || 1)) }));
   }, [projects]);
 
   const topFailing = projects
@@ -90,22 +89,24 @@ export default function AnalyticsPage({ projects }: AnalyticsPageProps) {
         <div className="space-y-5">
           <RecentIncidents projects={projects} limit={5} />
 
-          <Card>
-            <h3 className="text-lg font-semibold">Top failing monitors</h3>
-            <div className="mt-3 space-y-2">
-              {topFailing.map((p) => (
-                <div key={p.id} className="rounded-2xl border border-white/8 bg-white/[0.02] p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-white">{p.name}</p>
-                      <p className="mt-1 text-xs text-gray-400">{p.incidentCount} incidents</p>
+          {topFailing.length > 0 && (
+            <Card>
+              <h3 className="text-lg font-semibold">Top failing monitors</h3>
+              <div className="mt-3 space-y-2">
+                {topFailing.map((p) => (
+                  <div key={p.id} className="rounded-2xl border border-white/8 bg-white/[0.02] p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-white">{p.name}</p>
+                        <p className="mt-1 text-xs text-gray-400">{p.incidentCount || 0} incidents</p>
+                      </div>
+                      <div className="text-sm text-gray-400">{p.region || 'Global'}</div>
                     </div>
-                    <div className="text-sm text-gray-400">{p.region}</div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
       </section>
     </div>

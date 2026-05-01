@@ -19,6 +19,7 @@ interface StatusPageProps {
 
 export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTogglePause, onView, onUpdateProject, search, onSearchChange }: StatusPageProps) {
   const [statusFilter, setStatusFilter] = useState<MonitorStatus | 'all' | 'paused'>('all');
+  const [projectFilter, setProjectFilter] = useState('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
 
@@ -47,6 +48,11 @@ export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTog
     };
   }, [projects]);
 
+  const visibleProjects = useMemo(
+    () => (projectFilter === 'all' ? projects : projects.filter((project) => project.id === projectFilter)),
+    [projectFilter, projects],
+  );
+
   return (
     <div className="space-y-6">
       <section className="rounded-[1.75rem] border border-white/10 bg-app-card p-6 shadow-soft">
@@ -66,15 +72,26 @@ export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTog
       </section>
 
       <section>
-        <div className="mb-4 flex items-center gap-4">
+        <div className="mb-4 flex flex-wrap items-center gap-4">
           <div className="text-sm text-gray-400">Total: <span className="text-white">{counts.total}</span></div>
           <div className="text-sm text-gray-400">Up: <span className="text-white">{counts.up}</span></div>
           <div className="text-sm text-gray-400">Down: <span className="text-white">{counts.down}</span></div>
           <div className="text-sm text-gray-400">Paused: <span className="text-white">{counts.paused}</span></div>
+          <select
+            className="h-10 rounded-2xl border border-white/10 bg-app-card px-3 text-sm text-white outline-none"
+            value={projectFilter}
+            onChange={(event) => setProjectFilter(event.target.value)}
+            aria-label="Filter monitors by project"
+          >
+            <option value="all">All projects</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>{project.name}</option>
+            ))}
+          </select>
         </div>
 
         <MonitorTable
-          projects={projects}
+          projects={visibleProjects}
           onEdit={(p) => handleEdit(p)}
           onDelete={(p) => onDelete(p)}
           onTogglePause={(p) => onTogglePause(p)}
