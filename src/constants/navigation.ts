@@ -13,5 +13,5 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'alerts', label: 'Alerts', icon: Siren },
   { key: 'analytics', label: 'Analytics', icon: ChartNoAxesCombined },
-  { key: 'status', label: 'Status Pages', icon: Bell },
+  { key: 'status', label: 'Monitors', icon: Bell },
 ];

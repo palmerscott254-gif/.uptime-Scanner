@@ -8,6 +8,7 @@ import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
 import AlertsPage from './pages/AlertsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
+import StatusPage from './pages/StatusPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
 import { ConfirmModal } from './components/ui/Modal';
 import { Button } from './components/ui/Button';
@@ -316,11 +317,28 @@ export default function App() {
 
     if (view === 'status') {
       return (
-        <PublicStatusPage
+        <StatusPage
           projects={projects}
-          onSelectProject={(id) => {
-            setSelectedProjectId(id);
+          onCreate={openModal}
+          onEdit={(p) => {
+            setFormValues({ url: p.url, name: p.name, interval: p.interval, email: p.email, keepAlive: p.keepAlive ?? true, retryThreshold: p.retryThreshold ?? 2 });
+            setModalOpen(true);
+          }}
+          onDelete={(p) => handleRequestDelete(p)}
+          onTogglePause={(p) => {
+            // toggle keepAlive flag
+            const next = projects.map((proj) => (proj.id === p.id ? { ...proj, keepAlive: !proj.keepAlive } : proj));
+            setProjects(next);
+            // persist to backend
+            fetch(`${API_BASE_URL}/api/projects/${p.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepAlive: !p.keepAlive }) }).catch(() => {});
+          }}
+          onView={(p) => {
+            setSelectedProjectId(p.id);
             setView('details');
+          }}
+          onUpdateProject={(updated) => {
+            setProjects((current) => current.map((proj) => (proj.id === updated.id ? updated : proj)));
+            fetch(`${API_BASE_URL}/api/projects/${updated.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
           }}
         />
       );
@@ -359,9 +377,9 @@ export default function App() {
 
       <div className={sidebarCollapsed ? 'lg:pl-[84px]' : 'lg:pl-[264px]'}>
         <Topbar
-          search={activeNav === 'dashboard' && view === 'dashboard' ? search : undefined}
-          onSearchChange={activeNav === 'dashboard' && view === 'dashboard' ? setSearch : undefined}
-          onAddProject={activeNav === 'dashboard' && view === 'dashboard' ? openModal : undefined}
+          search={(activeNav === 'dashboard' && view === 'dashboard') || activeNav === 'status' ? search : undefined}
+          onSearchChange={(activeNav === 'dashboard' && view === 'dashboard') || activeNav === 'status' ? setSearch : undefined}
+          onAddProject={activeNav === 'dashboard' && view === 'dashboard' ? openModal : activeNav === 'status' ? openModal : undefined}
         />
 
         <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">{renderView()}</main>

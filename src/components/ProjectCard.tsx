@@ -12,7 +12,7 @@ interface ProjectCardProps {
   onDelete?: (project: Project) => void;
 }
 
-export function ProjectCard({ project, onView, onLogs }: ProjectCardProps) {
+export function ProjectCard({ project, onView, onLogs, onDelete }: ProjectCardProps) {
   const meta = statusMeta[project.status];
 
   return (

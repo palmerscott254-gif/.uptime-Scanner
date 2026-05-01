@@ -100,7 +100,7 @@ export function DashboardPage({
 
       <section className="grid gap-5 md:grid-cols-3">
         <div className="md:col-span-2">
-          {/* Projects grid */}
+          {/* Executive summary charts and highlights (kept intentionally concise) */}
         </div>
         <div>
           <RecentIncidents projects={projects} />
