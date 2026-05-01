@@ -36,8 +36,8 @@ export default function AlertsPage({ projects, search }: AlertsPageProps) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Alerts</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Active alerts & notifications</h1>
-            <p className="mt-2 text-gray-400">Manage incidents, triage critical systems, and clear resolved issues.</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Alerts</h1>
+            <p className="mt-2 text-gray-400">Monitor critical alerts across your systems.</p>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="primary">Settings</Button>
@@ -46,9 +46,9 @@ export default function AlertsPage({ projects, search }: AlertsPageProps) {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <StatsCard label="Total Monitors" value={String(summary.total)} icon={Siren} change="-" />
-        <StatsCard label="Critical" value={String(critical.length)} icon={AlertTriangle} change="Needs attention" />
-        <StatsCard label="Warning" value={String(warning.length)} icon={Slash} change="Performance" />
+        <StatsCard label="Total Monitors" value={String(summary.total)} icon={Siren} change="—" />
+        <StatsCard label="Critical" value={String(critical.length)} icon={AlertTriangle} change="—" />
+        <StatsCard label="Warning" value={String(warning.length)} icon={Slash} change="—" />
       </section>
 
       <section className="grid gap-5 lg:grid-cols-3">

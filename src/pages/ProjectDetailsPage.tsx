@@ -130,20 +130,20 @@ export function ProjectDetailsPage({ project, range, onRangeChange, onBack }: Pr
               />
 
               <Input
-                label="SMS Placeholder"
+                label="SMS Number (Optional)"
                 value={sms}
                 onChange={(event) => setSms(event.target.value)}
                 placeholder="+1 (555) 000-1234"
-                helperText="Reserved for SMS integration."
+                helperText="Optional SMS notifications for critical incidents."
               />
 
               <Input
-                label="Webhook Placeholder"
+                label="Webhook URL (Optional)"
                 value={webhook}
                 onChange={(event) => setWebhook(event.target.value)}
                 placeholder="https://hooks.slack.com/..."
                 leftIcon={<Webhook className="h-4 w-4" />}
-                helperText="Reserved for webhook notifications."
+                helperText="Optional webhook for real-time integrations with Slack, Teams, or custom services."
               />
 
               <label className="block space-y-2">

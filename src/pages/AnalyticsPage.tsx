@@ -33,16 +33,16 @@ export default function AnalyticsPage({ projects }: AnalyticsPageProps) {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Analytics</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">System analytics & trends</h1>
-            <p className="mt-2 text-gray-400">Key performance indicators and incident insights.</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Analytics</h1>
+            <p className="mt-2 text-gray-400">Monitor trends and performance metrics.</p>
           </div>
         </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-3">
-        <StatsCard label="Global Uptime %" value={`${uptimeOverall}%`} icon={ShieldCheck} change="7d average" trend="up" />
-        <StatsCard label="Avg Response" value={`${avgResponse}ms`} icon={Clock3} change="-3.2%" trend="up" />
-        <StatsCard label="Monitors" value={String(summary.total)} icon={TrendingUp} change="-" />
+        <StatsCard label="Global Uptime %" value={`${uptimeOverall}%`} icon={ShieldCheck} change="—" />
+        <StatsCard label="Avg Response" value={`${avgResponse}ms`} icon={Clock3} change="—" />
+        <StatsCard label="Monitors" value={String(summary.total)} icon={TrendingUp} change="—" />
       </section>
 
       <section className="space-y-5">

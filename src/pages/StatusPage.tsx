@@ -59,8 +59,8 @@ export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTog
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Monitors</p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Monitor management</h1>
-            <p className="mt-2 text-gray-400">Add, edit, pause and remove monitors from your account.</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Monitors</h1>
+            <p className="mt-2 text-gray-400">Manage your monitored endpoints.</p>
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.02] p-2 sm:flex">

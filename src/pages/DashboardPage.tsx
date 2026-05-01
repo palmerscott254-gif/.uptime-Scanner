@@ -66,9 +66,9 @@ export function DashboardPage({
       <section className="rounded-[1.75rem] border border-white/10 bg-app-card p-6 shadow-soft">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Command Center</p>
-            <h1 className="mt-2 text-4xl font-bold tracking-tight text-white">System Health Overview</h1>
-            <p className="mt-2 max-w-2xl text-gray-400">Real-time visibility across endpoints, alerts, and response behavior.</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Dashboard</p>
+            <h1 className="mt-2 text-4xl font-bold tracking-tight text-white">Monitor Overview</h1>
+            <p className="mt-2 max-w-2xl text-gray-400">Track status and performance of your monitored endpoints.</p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
@@ -95,10 +95,9 @@ export function DashboardPage({
         <StatsCard
           label="Total Monitors"
           value={String(stats.total)}
-          change="+8.2% month over month"
+          change="—"
           icon={ShieldCheck}
           accentClassName="bg-info/10 text-info"
-          trend="up"
           onClick={() => {
             const ev = new CustomEvent('navigate-monitors', { detail: { filter: 'all' } });
             window.dispatchEvent(ev as Event);
@@ -107,10 +106,9 @@ export function DashboardPage({
         <StatsCard
           label="Online"
           value={String(stats.online)}
-          change="All systems nominal"
+          change="—"
           icon={TrendingUp}
           accentClassName="bg-success/10 text-success"
-          trend="up"
           onClick={() => {
             onStatusFilterChange('up');
             const ev = new CustomEvent('navigate-monitors', { detail: { filter: 'up' } });
@@ -120,10 +118,9 @@ export function DashboardPage({
         <StatsCard
           label="Down"
           value={String(stats.down)}
-          change="Requires triage"
+          change="—"
           icon={AlertTriangle}
           accentClassName="bg-danger/10 text-danger"
-          trend="down"
           onClick={() => {
             onStatusFilterChange('down');
             const ev = new CustomEvent('navigate-monitors', { detail: { filter: 'down' } });
@@ -131,12 +128,11 @@ export function DashboardPage({
           }}
         />
         <StatsCard
-          label="Avg Response Time"
+          label="Avg Response"
           value={`${averageResponse(projects)}ms`}
-          change="-4.1% latency improvement"
+          change="—"
           icon={Clock3}
           accentClassName="bg-warning/10 text-warning"
-          trend="up"
         />
       </section>
 
