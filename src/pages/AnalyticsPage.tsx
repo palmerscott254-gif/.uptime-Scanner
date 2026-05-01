@@ -28,7 +28,7 @@ export default function AnalyticsPage() {
 
   const topFailing = projects
     .slice()
-    .sort((a, b) => b.incidentCount - a.incidentCount)
+    .sort((a, b) => (b.incidentCount ?? 0) - (a.incidentCount ?? 0))
     .slice(0, 5);
 
   return (

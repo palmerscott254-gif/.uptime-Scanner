@@ -1,11 +1,12 @@
-import type { PropsWithChildren } from 'react';
+import type { ReactNode } from 'react';
 import { cn } from '../../utils';
 
-interface SelectProps extends PropsWithChildren<HTMLSelectElement> {
+interface SelectProps {
   value?: string;
   onChange?: (v: string) => void;
   className?: string;
   id?: string;
+  children?: ReactNode;
 }
 
 export function Select({ value, onChange, children, className, id }: SelectProps) {
