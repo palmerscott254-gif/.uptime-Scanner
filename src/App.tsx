@@ -6,6 +6,8 @@ import { NAV_ITEMS, type NavKey } from './constants/navigation';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
+import AlertsPage from './pages/AlertsPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
 import { buildSparklineSeries, enrichProject, extractProjectName, normalizeUrl } from './utils';
 import { mockProjects } from './data/mock';
@@ -255,14 +257,12 @@ export default function App() {
   };
 
   const renderView = () => {
-    if (['alerts', 'analytics'].includes(activeNav)) {
-      const current = NAV_ITEMS.find((item) => item.key === activeNav);
-      return (
-        <section className="rounded-[1.75rem] border border-dashed border-white/15 bg-app-card/60 p-12 text-center shadow-soft">
-          <h2 className="text-3xl font-semibold text-white">{current?.label}</h2>
-          <p className="mt-3 text-gray-400">This module shell is ready for the next backend integration pass.</p>
-        </section>
-      );
+    if (activeNav === 'alerts') {
+      return <AlertsPage />;
+    }
+
+    if (activeNav === 'analytics') {
+      return <AnalyticsPage />;
     }
 
     if (view === 'details' && selectedProject) {
