@@ -323,33 +323,10 @@ export default function App() {
     if (key === 'projects') {
       return;
     }
-    if (key === 'status') {
       setView('status');
-      return;
-    }
-  };
-
-  const renderView = () => {
-    if (activeNav === 'projects') {
-      if (view === 'details' && selectedProject) {
-        return <ProjectDetailsPage project={selectedProject} range={range} onRangeChange={setRange} onBack={() => setView('dashboard')} />;
-      }
-
-      return (
-        <ProjectsPage
-          projects={projects}
-          loading={loading}
-          search={search}
-          onViewProject={handleViewProject}
-          onLogsProject={handleLogsProject}
-          onDeleteProject={handleRequestDelete}
-          onAddProject={openModal}
-        />
-      );
-    }
 
     if (activeNav === 'alerts') {
-      return <AlertsPage projects={projects} search={search} onCreateAlert={openModal} />;
+      return <AlertsPage onCreateAlert={openModal} />;
     }
 
     if (activeNav === 'analytics') {
@@ -395,20 +372,7 @@ export default function App() {
 
     return (
       <DashboardPage
-        projects={projects}
-        loading={loading}
-        search={search}
-        statusFilter={statusFilter}
-        tagFilter={tagFilter}
-        sortBy={sortBy}
-        onSearchChange={setSearch}
-        onStatusFilterChange={setStatusFilter}
-        onTagFilterChange={setTagFilter}
-        onSortChange={setSortBy}
         onAddProject={openModal}
-        onViewProject={handleViewProject}
-        onLogsProject={handleLogsProject}
-        onDeleteProject={handleRequestDelete}
       />
     );
   };
