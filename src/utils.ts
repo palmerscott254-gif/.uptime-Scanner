@@ -69,10 +69,6 @@ export function extractProjectName(url: string) {
   }
 }
 
-export function generatePublicUrl(name: string) {
-  return `https://${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.example.com`;
-}
-
 export function averageResponse(projects: Project[]) {
   if (!projects.length) return 0;
   return Math.round(projects.reduce((sum, project) => sum + project.responseTime, 0) / projects.length);
