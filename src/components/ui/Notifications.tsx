@@ -16,7 +16,11 @@ const sample: NotificationItem[] = [
   { id: 'n3', title: 'Deployment succeeded', description: 'Frontend deployed to production', time: '3h' },
 ];
 
-export function NotificationsDropdown() {
+interface NotificationsDropdownProps {
+  items?: NotificationItem[];
+}
+
+export function NotificationsDropdown({ items }: NotificationsDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -43,7 +47,7 @@ export function NotificationsDropdown() {
           </div>
 
           <ul className="mt-3 space-y-2 max-h-64 overflow-y-auto">
-            {sample.map((n) => (
+            {(items ?? sample).map((n) => (
               <li key={n.id} className="rounded-lg p-2 hover:bg-white/3">
                 <p className="text-sm font-medium">{n.title}</p>
                 <p className="text-xs text-gray-400">{n.description}</p>

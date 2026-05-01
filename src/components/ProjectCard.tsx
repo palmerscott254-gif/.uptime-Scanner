@@ -17,8 +17,12 @@ export function ProjectCard({ project, onView, onLogs, onDelete }: ProjectCardPr
 
   return (
     <article
+      role="button"
+      tabIndex={0}
+      onClick={() => onView(project)}
+      onKeyDown={(e) => ((e.key === 'Enter' || e.key === ' ') && onView(project))}
       className={cn(
-        'group overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-app-cardAlt',
+        'group overflow-hidden rounded-[1.75rem] border border-white/10 bg-app-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-app-cardAlt cursor-pointer',
         'border-l-4',
         meta.border,
       )}
@@ -68,18 +72,13 @@ export function ProjectCard({ project, onView, onLogs, onDelete }: ProjectCardPr
 
         <div className="flex flex-wrap gap-3 pt-1">
           <Button
-            variant="primary"
-            size="sm"
-            icon={<ChevronRight className="h-4 w-4" />}
-            onClick={() => onView(project)}
-          >
-            View
-          </Button>
-          <Button
             variant="secondary"
             size="sm"
             icon={<ListChecks className="h-4 w-4" />}
-            onClick={() => onLogs(project)}
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              onLogs(project);
+            }}
           >
             Logs
           </Button>
@@ -88,7 +87,10 @@ export function ProjectCard({ project, onView, onLogs, onDelete }: ProjectCardPr
                 variant="danger"
                 size="sm"
                 icon={<Trash2 className="h-4 w-4" />}
-                onClick={() => onDelete(project)}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  onDelete(project);
+                }}
                 aria-label={`Delete ${project.name}`}
               >
                 Delete

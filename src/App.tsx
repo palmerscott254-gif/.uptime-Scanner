@@ -311,13 +311,38 @@ export default function App() {
     setView('dashboard');
   };
 
+  const handleKpiClick = (key: string) => {
+    if (key === 'monitors') {
+      setActiveNav('status');
+      setView('status');
+      return;
+    }
+    if (key === 'online') {
+      setActiveNav('status');
+      setView('status');
+      setStatusFilter('up');
+      return;
+    }
+    if (key === 'down') {
+      setActiveNav('status');
+      setView('status');
+      setStatusFilter('down');
+      return;
+    }
+    if (key === 'alerts') {
+      setActiveNav('alerts');
+      setView('dashboard');
+      return;
+    }
+  };
+
   const renderView = () => {
     if (activeNav === 'alerts') {
-      return <AlertsPage />;
+      return <AlertsPage projects={projects} />;
     }
 
     if (activeNav === 'analytics') {
-      return <AnalyticsPage />;
+      return <AnalyticsPage projects={projects} />;
     }
 
     if (view === 'details' && selectedProject) {
@@ -349,6 +374,8 @@ export default function App() {
             setProjects((current) => current.map((proj) => (proj.id === updated.id ? updated : proj)));
             fetch(`${API_BASE_URL}/api/projects/${updated.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
           }}
+          search={search}
+          onSearchChange={setSearch}
         />
       );
     }
@@ -369,6 +396,7 @@ export default function App() {
         onViewProject={handleViewProject}
         onLogsProject={handleLogsProject}
         onDeleteProject={handleRequestDelete}
+        onKpiClick={handleKpiClick}
       />
     );
   };
@@ -389,6 +417,7 @@ export default function App() {
           search={(activeNav === 'dashboard' && view === 'dashboard') || activeNav === 'status' ? search : undefined}
           onSearchChange={(activeNav === 'dashboard' && view === 'dashboard') || activeNav === 'status' ? setSearch : undefined}
           onAddProject={activeNav === 'dashboard' && view === 'dashboard' ? openModal : activeNav === 'status' ? openModal : undefined}
+          projects={projects}
         />
 
         <main className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">{renderView()}</main>

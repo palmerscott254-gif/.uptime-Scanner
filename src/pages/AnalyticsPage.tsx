@@ -3,12 +3,15 @@ import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContai
 import { Card } from '../components/ui/Card';
 import { StatsCard } from '../components/StatsCard';
 import { RecentIncidents } from '../components/dashboard/RecentIncidents';
-import { mockProjects } from '../data/mock';
 import { averageResponse, buildSparklineSeries, getUptimePercent, projectSummary } from '../utils';
+import type { Project } from '../types';
 import { ShieldCheck, Clock3, TrendingUp } from 'lucide-react';
 
-export default function AnalyticsPage() {
-  const projects = mockProjects;
+interface AnalyticsPageProps {
+  projects: Project[];
+}
+
+export default function AnalyticsPage({ projects }: AnalyticsPageProps) {
   const summary = projectSummary(projects);
   const [range] = useState('7d');
 

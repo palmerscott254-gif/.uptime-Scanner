@@ -23,6 +23,7 @@ interface DashboardPageProps {
   onViewProject: (project: Project) => void;
   onLogsProject: (project: Project) => void;
   onDeleteProject: (project: Project) => void;
+  onKpiClick?: (key: string) => void;
 }
 
 export function DashboardPage({
@@ -93,30 +94,53 @@ export function DashboardPage({
       </section>
 
       <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <StatsCard label="Total Monitors" value={String(stats.total)} change="+8.2% month over month" icon={ShieldCheck} accentClassName="bg-info/10 text-info" trend="up" />
-        <StatsCard label="Online" value={String(stats.online)} change="All systems nominal" icon={TrendingUp} accentClassName="bg-success/10 text-success" trend="up" />
-        <StatsCard label="Down" value={String(stats.down)} change="Requires triage" icon={AlertTriangle} accentClassName="bg-danger/10 text-danger" trend="down" />
-        <StatsCard label="Avg Response Time" value={`${averageResponse(projects)}ms`} change="-4.1% latency improvement" icon={Clock3} accentClassName="bg-warning/10 text-warning" trend="up" />
+        <StatsCard
+          label="Total Monitors"
+          value={String(stats.total)}
+          change="+8.2% month over month"
+          icon={ShieldCheck}
+          accentClassName="bg-info/10 text-info"
+          trend="up"
+          onClick={() => onKpiClick?.('monitors')}
+        />
+        <StatsCard
+          label="Online"
+          value={String(stats.online)}
+          change="All systems nominal"
+          icon={TrendingUp}
+          accentClassName="bg-success/10 text-success"
+          trend="up"
+          onClick={() => onKpiClick?.('online')}
+        />
+        <StatsCard
+          label="Down"
+          value={String(stats.down)}
+          change="Requires triage"
+          icon={AlertTriangle}
+          accentClassName="bg-danger/10 text-danger"
+          trend="down"
+          onClick={() => onKpiClick?.('down')}
+        />
+        <StatsCard
+          label="Avg Response Time"
+          value={`${averageResponse(projects)}ms`}
+          change="-4.1% latency improvement"
+          icon={Clock3}
+          accentClassName="bg-warning/10 text-warning"
+          trend="up"
+        />
       </section>
 
       <section className="grid gap-5 md:grid-cols-3">
-        <div className="md:col-span-2">
-          {/* Executive summary charts and highlights (kept intentionally concise) */}
-        </div>
-        <div>
-          <RecentIncidents projects={projects} />
-        </div>
+        <div className="md:col-span-2">{/* Executive summary charts and highlights (kept intentionally concise) */}</div>
+        <div>{/* reserve right column for contextual items (moved incidents to bottom) */}</div>
       </section>
 
       <section className="flex flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft lg:flex-row lg:items-end lg:justify-between">
         <div className="grid flex-1 gap-4 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
-          <Input
-            label="Search"
-            placeholder="Search projects, URLs, or tags"
-            value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
-            leftIcon={<Search className="h-4 w-4" />}
-          />
+          <div>
+            <p className="text-sm text-gray-400">Use the global search in the top bar to find projects, monitors, alerts, and incidents.</p>
+          </div>
           <label className="block space-y-2">
             <span className="text-sm font-medium text-gray-300">Filter by status</span>
             <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-1">
@@ -196,6 +220,10 @@ export function DashboardPage({
           </div>
         </section>
       )}
+
+      <section>
+        <RecentIncidents projects={projects} />
+      </section>
     </div>
   );
 }

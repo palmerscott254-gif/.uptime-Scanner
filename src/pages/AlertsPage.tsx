@@ -4,14 +4,17 @@ import { Card } from '../components/ui/Card';
 import { StatsCard } from '../components/StatsCard';
 import { RecentIncidents } from '../components/dashboard/RecentIncidents';
 import { ProjectCard } from '../components/ProjectCard';
-import { mockProjects } from '../data/mock';
 import { cn, projectSummary } from '../utils';
 import { Button } from '../components/ui/Button';
+import type { Project } from '../types';
 
-export default function AlertsPage() {
+interface AlertsPageProps {
+  projects: Project[];
+}
+
+export default function AlertsPage({ projects }: AlertsPageProps) {
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'resolved'>('all');
 
-  const projects = mockProjects;
   const summary = projectSummary(projects);
 
   const activeAlerts = useMemo(() => projects.filter((p) => p.status !== 'up'), [projects]);
@@ -77,16 +80,9 @@ export default function AlertsPage() {
           </Card>
 
           <Card>
-            <h3 className="text-lg font-semibold">Mock notification feed</h3>
-            <div className="mt-3 space-y-2">
-              <div className="rounded-lg border border-white/6 bg-white/[0.02] p-3">
-                <p className="text-sm font-medium">Payment API latency spike</p>
-                <p className="mt-1 text-xs text-gray-400">High response time detected across several probes.</p>
-              </div>
-              <div className="rounded-lg border border-white/6 bg-white/[0.02] p-3">
-                <p className="text-sm font-medium">Auth Service recovered</p>
-                <p className="mt-1 text-xs text-gray-400">Service returned to normal after retries.</p>
-              </div>
+            <h3 className="text-lg font-semibold">Recent alerts</h3>
+            <div className="mt-3">
+              <RecentIncidents projects={projects} limit={5} />
             </div>
           </Card>
         </div>

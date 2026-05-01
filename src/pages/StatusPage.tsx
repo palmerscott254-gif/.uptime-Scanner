@@ -13,10 +13,11 @@ interface StatusPageProps {
   onTogglePause: (p: Project) => void;
   onView: (p: Project) => void;
   onUpdateProject: (updated: Project) => void;
+  search: string;
+  onSearchChange?: (value: string) => void;
 }
 
-export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTogglePause, onView, onUpdateProject }: StatusPageProps) {
-  const [search, setSearch] = useState('');
+export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTogglePause, onView, onUpdateProject, search, onSearchChange }: StatusPageProps) {
   const [statusFilter, setStatusFilter] = useState<MonitorStatus | 'all' | 'paused'>('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
@@ -57,7 +58,7 @@ export default function StatusPage({ projects, onCreate, onEdit, onDelete, onTog
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.02] p-2 sm:flex">
-              <input className="h-10 w-64 bg-transparent px-3 text-sm text-white outline-none" placeholder="Search monitors" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <p className="text-sm text-gray-400">Use the global search in the top bar to search monitors.</p>
             </div>
             <Button onClick={handleOpenCreate}>Add monitor</Button>
           </div>

@@ -9,11 +9,22 @@ interface StatsCardProps {
   trend?: 'up' | 'down';
   icon: LucideIcon;
   accentClassName?: string;
+  onClick?: () => void;
 }
 
-export function StatsCard({ label, value, change, trend, icon: Icon, accentClassName }: StatsCardProps) {
+export function StatsCard({ label, value, change, trend, icon: Icon, accentClassName, onClick }: StatsCardProps) {
+  const clickable = typeof onClick === 'function';
+  const base =
+    'group rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-app-cardAlt';
+
   return (
-    <article className="group rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-app-cardAlt">
+    <article
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onClick={clickable ? onClick : undefined}
+      onKeyDown={clickable ? (e) => ((e.key === 'Enter' || e.key === ' ') && onClick && onClick()) : undefined}
+      className={cn(base, clickable ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-info/40' : '')}
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm text-gray-400">{label}</p>
