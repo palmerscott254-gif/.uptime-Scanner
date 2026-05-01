@@ -88,4 +88,44 @@ const makeMiniSeries = (seed: number) =>
     }),
   );
 
-export const mockProjects: Project[] = [];
+function makeProject(idSeed: number, name: string, url: string, status: 'up' | 'down' | 'slow', tags: string[], region = 'US-East'): Project {
+  const seed = idSeed + name.length;
+  const uptimeSeries = makeSeries(seed);
+  const responseSeries = makeSeries(seed + 3);
+
+  return {
+    id: `${idSeed}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    name,
+    url: url || generatePublicUrl(name),
+    status,
+    responseTime: Math.max(90, 120 + seed * 6),
+    lastChecked: 'Just now',
+    interval: 1,
+    email: `owner+${seed}@example.com`,
+    alertsEnabled: true,
+    keepAlive: true,
+    retryThreshold: 2,
+    tags,
+    region,
+    sslValid: true,
+    uptimePercent:
+      Math.round((uptimeSeries['7d'].reduce((s, p) => s + p.uptime, 0) / uptimeSeries['7d'].length) * 100) / 100,
+    lastIncident: status === 'down' ? '6 min ago' : 'No incidents',
+    incidentCount: status === 'down' ? 2 : status === 'slow' ? 1 : 0,
+    uptimeSeries,
+    responseSeries,
+    miniSeries: makeMiniSeries(seed),
+    logs: createLogs(name, status),
+  };
+}
+
+export const mockProjects: Project[] = [
+  makeProject(1, 'Payment API', 'https://payments.example.com', 'up', ['API', 'Payments'], 'US-East'),
+  makeProject(2, 'Public Website', 'https://www.example.com', 'slow', ['Web', 'Public'], 'EU-West'),
+  makeProject(3, 'Auth Service', 'https://auth.example.com', 'up', ['API', 'Auth'], 'US-West'),
+  makeProject(4, 'Billing Worker', 'https://billing.example.com', 'down', ['Worker', 'Billing'], 'US-East'),
+  makeProject(5, 'Notifications', 'https://notify.example.com', 'up', ['API', 'Realtime'], 'AP-South'),
+  makeProject(6, 'Status Page', 'https://status.example.com', 'up', ['Status', 'Public'], 'EU-West'),
+  makeProject(7, 'Analytics', 'https://analytics.example.com', 'slow', ['Analytics'], 'US-East'),
+  makeProject(8, 'Media CDN', 'https://cdn.example.com', 'up', ['CDN', 'Assets'], 'GLOBAL'),
+];

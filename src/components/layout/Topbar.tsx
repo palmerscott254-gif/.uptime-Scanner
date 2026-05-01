@@ -1,6 +1,7 @@
 import { Plus, Search } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { NotificationsDropdown } from '../ui/Notifications';
 
 interface TopbarProps {
   search?: string;
@@ -27,9 +28,12 @@ export function Topbar({ search, onSearchChange, onAddProject }: TopbarProps) {
 
         <div className="flex items-center gap-2">
           {onAddProject ? (
-            <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={onAddProject}>
-              Add Project
-            </Button>
+            <>
+              <NotificationsDropdown />
+              <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={onAddProject}>
+                Add Project
+              </Button>
+            </>
           ) : null}
         </div>
       </div>

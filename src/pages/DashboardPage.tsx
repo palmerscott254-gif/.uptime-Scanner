@@ -3,6 +3,7 @@ import type { MonitorStatus, Project, SortKey } from '../types';
 import { averageResponse, cn, getUptimePercent, projectSummary } from '../utils';
 import { ProjectCard } from '../components/ProjectCard';
 import { StatsCard } from '../components/StatsCard';
+import { RecentIncidents } from '../components/dashboard/RecentIncidents';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { DashboardSkeleton } from '../components/Skeletons';
@@ -94,6 +95,15 @@ export function DashboardPage({
         <StatsCard label="Online" value={String(stats.online)} change="All systems nominal" icon={TrendingUp} accentClassName="bg-success/10 text-success" trend="up" />
         <StatsCard label="Down" value={String(stats.down)} change="Requires triage" icon={AlertTriangle} accentClassName="bg-danger/10 text-danger" trend="down" />
         <StatsCard label="Avg Response Time" value={`${averageResponse(projects)}ms`} change="-4.1% latency improvement" icon={Clock3} accentClassName="bg-warning/10 text-warning" trend="up" />
+      </section>
+
+      <section className="grid gap-5 md:grid-cols-3">
+        <div className="md:col-span-2">
+          {/* Projects grid */}
+        </div>
+        <div>
+          <RecentIncidents projects={projects} />
+        </div>
       </section>
 
       <section className="flex flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-app-card p-5 shadow-soft lg:flex-row lg:items-end lg:justify-between">

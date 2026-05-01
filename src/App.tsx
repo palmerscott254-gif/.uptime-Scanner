@@ -8,6 +8,7 @@ import { ProjectDetailsPage } from './pages/ProjectDetailsPage';
 import { PublicStatusPage } from './pages/PublicStatusPage';
 import type { MonitorStatus, PageView, Project, ProjectFormValues, SortKey, TimeRange } from './types';
 import { buildSparklineSeries, enrichProject, extractProjectName, normalizeUrl } from './utils';
+import { mockProjects } from './data/mock';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
@@ -121,7 +122,9 @@ export default function App() {
         setSelectedProjectId((current) => current || nextProjects[0]?.id || '');
       } catch (error) {
         console.error('Failed to load projects:', error);
-        setProjects([]);
+        // Fallback to local mock data for offline / demo mode
+        setProjects(mockProjects.map(enrichProject));
+        setSelectedProjectId((current) => current || mockProjects[0]?.id || '');
       } finally {
         setLoading(false);
       }

@@ -36,6 +36,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
+      type={props.type ?? 'button'}
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-2xl font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50',
         variantStyles[variant],

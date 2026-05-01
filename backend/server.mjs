@@ -8,11 +8,23 @@ const __dirname = path.dirname(__filename);
 const DATA_FILE = path.join(__dirname, 'data', 'projects.json');
 const PORT = Number(process.env.PORT || 3001);
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+const ALLOWED_ORIGINS = [
+  'https://uptime-scanner.vercel.app',
+];
+
+function buildCorsHeaders(req) {
+  const origin = req.headers.origin || req.headers.Origin || '';
+  const allowed = ALLOWED_ORIGINS.includes(origin);
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+  if (allowed) {
+    headers['Access-Control-Allow-Origin'] = origin;
+    headers['Access-Control-Allow-Credentials'] = 'true';
+  }
+  return headers;
+}
 
 const RANGE_LENGTHS = {
   '24h': 12,
@@ -20,9 +32,10 @@ const RANGE_LENGTHS = {
   '30d': 10,
 };
 
-function sendJson(res, statusCode, payload) {
+function sendJson(req, res, statusCode, payload) {
+  const cors = buildCorsHeaders(req);
   res.writeHead(statusCode, {
-    ...CORS_HEADERS,
+    ...cors,
     'Content-Type': 'application/json; charset=utf-8',
   });
   res.end(JSON.stringify(payload));
@@ -246,7 +259,10 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, CORS_HEADERS);
+    const cors = buildCorsHeaders(req);
+    res.writeHead(204, {
+      ...cors,
+    });
     res.end();
     return;
   }
@@ -256,20 +272,20 @@ const server = http.createServer(async (req, res) => {
 
   try {
     if (req.method === 'GET' && pathname === '/api/health') {
-      sendJson(res, 200, { ok: true, service: 'uptime-scanner-api', timestamp: new Date().toISOString() });
+      sendJson(req, res, 200, { ok: true, service: 'uptime-scanner-api', timestamp: new Date().toISOString() });
       return;
     }
 
     if (req.method === 'GET' && pathname === '/api/projects') {
       const projects = await readProjects();
-      sendJson(res, 200, { data: projects });
+      sendJson(req, res, 200, { data: projects });
       return;
     }
 
     if (req.method === 'POST' && pathname === '/api/projects') {
       const body = await parseBody(req);
       if (!body?.url) {
-        sendJson(res, 400, { error: 'url is required' });
+        sendJson(req, res, 400, { error: 'url is required' });
         return;
       }
 
@@ -284,14 +300,14 @@ const server = http.createServer(async (req, res) => {
       });
       projects.unshift(created);
       await writeProjects(projects);
-      sendJson(res, 201, { data: created });
+      sendJson(req, res, 201, { data: created });
       return;
     }
 
     if (req.method === 'POST' && pathname === '/api/projects/test') {
       const body = await parseBody(req);
       const result = await probeUrl(body?.url);
-      sendJson(res, 200, {
+      sendJson(req, res, 200, {
         reachable: result.reachable,
         statusCode: result.statusCode,
         responseTime: result.responseTime,
@@ -306,12 +322,12 @@ const server = http.createServer(async (req, res) => {
       const project = getProjectById(projects, id);
 
       if (!project) {
-        sendJson(res, 404, { error: 'Project not found' });
+        sendJson(req, res, 404, { error: 'Project not found' });
         return;
       }
 
       if (req.method === 'GET' && !action) {
-        sendJson(res, 200, { data: project });
+        sendJson(req, res, 200, { data: project });
         return;
       }
 
@@ -326,40 +342,40 @@ const server = http.createServer(async (req, res) => {
         };
         const nextProjects = projects.map((item) => (item.id === id ? updated : item));
         await writeProjects(nextProjects);
-        sendJson(res, 200, { data: updated });
+        sendJson(req, res, 200, { data: updated });
         return;
       }
 
       if (req.method === 'DELETE' && !action) {
         const nextProjects = projects.filter((item) => item.id !== id);
         await writeProjects(nextProjects);
-        sendJson(res, 200, { success: true });
+        sendJson(req, res, 200, { success: true });
         return;
       }
 
       if (req.method === 'GET' && action === 'uptime') {
         const range = searchParams.get('range') || '24h';
-        sendJson(res, 200, { data: getRangeSeries(project, range, 'uptimeSeries') });
+        sendJson(req, res, 200, { data: getRangeSeries(project, range, 'uptimeSeries') });
         return;
       }
 
       if (req.method === 'GET' && action === 'response') {
         const range = searchParams.get('range') || '24h';
-        sendJson(res, 200, { data: getRangeSeries(project, range, 'responseSeries') });
+        sendJson(req, res, 200, { data: getRangeSeries(project, range, 'responseSeries') });
         return;
       }
 
       if (req.method === 'GET' && action === 'logs') {
         const limit = Number(searchParams.get('limit') || 20);
-        sendJson(res, 200, { data: project.logs.slice(0, Math.max(1, limit)) });
+        sendJson(req, res, 200, { data: project.logs.slice(0, Math.max(1, limit)) });
         return;
       }
     }
 
-    sendJson(res, 404, { error: 'Not found' });
+    sendJson(req, res, 404, { error: 'Not found' });
   } catch (error) {
     console.error('API error:', error);
-    sendJson(res, 500, { error: 'Internal server error' });
+    sendJson(req, res, 500, { error: 'Internal server error' });
   }
 });
 
