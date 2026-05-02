@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "uptime-vercel",
+    "name": "Uptime Vercel",
+    "url": "https://uptime-scanner.vercel.app",
+    "status": "up",
+    "responseTime": 750,
+    "lastChecked": "2026-05-02T06:47:49.170Z",
+    "interval": 1,
+    "email": "",
+    "alertsEnabled": true,
+    "keepAlive": false,
+    "retryThreshold": 2,
+    "tags": [
+      "Custom"
+    ],
+    "uptimeSeries": {},
+    "responseSeries": {},
+    "miniSeries": [],
+    "logs": []
+  }
+]

@@ -1,1 +1,83 @@
-[]
+[
+  {
+    "id": "log-1777704469180-saa95l",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:47:49.181Z",
+    "responseTime": 750,
+    "details": "HTTP 200 - 750ms"
+  },
+  {
+    "id": "log-1777704408982-osdp09",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:46:48.982Z",
+    "responseTime": 557,
+    "details": "HTTP 200 - 557ms"
+  },
+  {
+    "id": "log-1777704358447-bifnjc",
+    "projectId": "uptime-vercel",
+    "type": "warning",
+    "message": "Uptime Vercel check failed",
+    "timestamp": "2026-05-02T06:45:58.447Z",
+    "responseTime": null,
+    "details": "Request timeout (Attempt 1/2)"
+  },
+  {
+    "id": "log-1777704288861-m0s9bs",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:44:48.861Z",
+    "responseTime": 440,
+    "details": "HTTP 200 - 440ms"
+  },
+  {
+    "id": "log-1777704228848-pg9ryb",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:43:48.848Z",
+    "responseTime": 412,
+    "details": "HTTP 200 - 412ms"
+  },
+  {
+    "id": "log-1777704170199-t3us0j",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:42:50.199Z",
+    "responseTime": 1787,
+    "details": "HTTP 200 - 1787ms"
+  },
+  {
+    "id": "log-1777704109142-ipkruh",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:41:49.143Z",
+    "responseTime": 733,
+    "details": "HTTP 200 - 733ms"
+  },
+  {
+    "id": "log-1777704049047-mid0y8",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:40:49.047Z",
+    "responseTime": 643,
+    "details": "HTTP 200 - 643ms"
+  },
+  {
+    "id": "log-1777703989035-u2uiae",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T06:39:49.036Z",
+    "responseTime": 594,
+    "details": "HTTP 200 - 594ms"
+  }
+]
