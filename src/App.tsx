@@ -242,65 +242,41 @@ export default function App() {
 
   const handleNavChange = (key: NavKey) => {
     setActiveNav(key);
-    setView('dashboard');
-    if (key === 'dashboard') {
-      return;
-    }
-    if (key === 'projects') {
-      return;
-    }
+    // Map nav keys to a simple view state. Detailed rendering is handled in `renderView()` below.
+    if (key === 'status') {
       setView('status');
+      return;
+    }
+    if (key === 'projects' || key === 'dashboard') {
+      setView('dashboard');
+      return;
+    }
+    // default to dashboard for other navs
+    setView('dashboard');
+  };
+
+  const renderView = () => {
+    if (view === 'details' && selectedProject) {
+      return <ProjectDetailsPage project={selectedProject} range={range} onRangeChange={setRange} onBack={() => setView('dashboard')} />;
+    }
+
+    if (view === 'status' || activeNav === 'status') {
+      return <StatusPage onCreate={openModal} />;
+    }
 
     if (activeNav === 'alerts') {
       return <AlertsPage onCreateAlert={openModal} />;
     }
 
     if (activeNav === 'analytics') {
-      return <AnalyticsPage projects={projects} />;
+      return <AnalyticsPage />;
     }
 
     if (activeNav === 'settings') {
       return <SettingsPage />;
     }
 
-    if (view === 'details' && selectedProject) {
-      return <ProjectDetailsPage project={selectedProject} range={range} onRangeChange={setRange} onBack={() => setView('dashboard')} />;
-    }
-
-    if (view === 'status') {
-      return (
-        <StatusPage
-          projects={projects}
-          onCreate={openModal}
-          onEdit={(p) => {
-            setFormValues({ url: p.url, name: p.name, interval: p.interval, email: p.email, keepAlive: p.keepAlive ?? true, retryThreshold: p.retryThreshold ?? 2 });
-            setModalOpen(true);
-          }}
-          onDelete={(p) => handleRequestDelete(p)}
-          onTogglePause={(p) => {
-            // toggle keepAlive flag
-            const next = projects.map((proj) => (proj.id === p.id ? { ...proj, keepAlive: !proj.keepAlive } : proj));
-            setProjects(next);
-            // persist to backend
-            fetch(`${API_BASE_URL}/api/projects/${p.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ keepAlive: !p.keepAlive }) }).catch(() => {});
-          }}
-          onView={(p) => {
-            setSelectedProjectId(p.id);
-            setView('details');
-          }}
-          onUpdateProject={(updated) => {
-            setProjects((current) => current.map((proj) => (proj.id === updated.id ? updated : proj)));
-            fetch(`${API_BASE_URL}/api/projects/${updated.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated) }).catch(() => {});
-          }}
-        />
-      );
-    }
-
-    return (
-      <DashboardPage
-        onAddProject={openModal}
-      />
-    );
+    return <DashboardPage onAddProject={openModal} />;
   };
 
   return (
