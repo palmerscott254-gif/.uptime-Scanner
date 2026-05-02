@@ -16,7 +16,7 @@ import { ConfirmModal } from './components/ui/Modal';
 import { Button } from './components/ui/Button';
 import { enrichProject, extractProjectName, normalizeUrl } from './utils';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const defaultForm: ProjectFormValues = {
   url: '',
