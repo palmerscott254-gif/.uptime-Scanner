@@ -1,11 +1,31 @@
 import http from 'node:http';
-import { promises as fs } from 'node:fs';
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const DATA_FILE = path.join(__dirname, 'data', 'projects.json');
+// Import storage and monitor engine
+import {
+  initializeStorage,
+  readProjects,
+  writeProjects,
+  getProjectById,
+  updateProject,
+  deleteProject,
+  getProjectLogs,
+  getProjectIncidents,
+} from './storage.js';
+
+import {
+  startMonitor,
+  stopMonitor,
+  loadAllMonitors,
+  getMonitorStatus,
+  stopAllMonitors,
+  setupGracefulShutdown,
+} from './monitorEngine.js';
+
+import { checkProject } from './checker.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 3001);
 
 const ALLOWED_ORIGINS = [
@@ -29,12 +49,6 @@ function buildCorsHeaders(req) {
   return headers;
 }
 
-const RANGE_LENGTHS = {
-  '24h': 12,
-  '7d': 7,
-  '30d': 10,
-};
-
 function sendJson(req, res, statusCode, payload) {
   const cors = buildCorsHeaders(req);
   res.writeHead(statusCode, {
@@ -44,41 +58,9 @@ function sendJson(req, res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
-async function ensureDataFile() {
-  await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, '[]\n', 'utf8');
-  }
-}
-
-async function readProjects() {
-  await ensureDataFile();
-  const raw = await fs.readFile(DATA_FILE, 'utf8');
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
-    // if file contains non-array, reset to empty
-    await writeProjects([]);
-    return [];
-  } catch (err) {
-    console.error('Failed to parse projects.json, resetting to empty array:', err);
-    // attempt to repair by writing an empty array
-    try {
-      await writeProjects([]);
-    } catch (writeErr) {
-      console.error('Failed to write repair projects.json:', writeErr);
-    }
-    return [];
-  }
-}
-
-async function writeProjects(projects) {
-  await fs.writeFile(DATA_FILE, `${JSON.stringify(projects, null, 2)}\n`, 'utf8');
-}
-
+/**
+ * Normalize URL to begin with http(s)
+ */
 function normalizeUrl(input) {
   const trimmed = String(input ?? '').trim();
   if (!trimmed) return '';
@@ -86,6 +68,9 @@ function normalizeUrl(input) {
   return `https://${trimmed}`;
 }
 
+/**
+ * Extract project name from URL
+ */
 function extractProjectName(url) {
   try {
     const parsed = new URL(normalizeUrl(url));
@@ -104,6 +89,9 @@ function extractProjectName(url) {
   }
 }
 
+/**
+ * Slug a string for project IDs
+ */
 function slugify(input) {
   return String(input ?? '')
     .toLowerCase()
@@ -112,106 +100,9 @@ function slugify(input) {
     .replace(/^-+|-+$/g, '');
 }
 
-function generatePublicUrl(name) {
-  return `https://${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.example.com`;
-}
-
-function createSeries(seed) {
-  const make = (length, baseUptime, baseResponse) =>
-    Array.from({ length }, (_, index) => ({
-      label: `${index + 1}`,
-      uptime: Math.max(80, Math.min(100, baseUptime + ((index + seed) % 4) - (index % 5 === 0 ? 2 : 0))),
-      response: Math.max(90, Math.min(1200, baseResponse + seed * 14 + index * 10 + (index % 3) * 16)),
-    }));
-
-  return {
-    '24h': make(12, 95, 160),
-    '7d': make(7, 97, 175),
-    '30d': make(10, 98, 165),
-  };
-}
-
-function createMiniSeries(seed) {
-  return Array.from({ length: 12 }, (_, index) => ({
-    label: `${index}`,
-    value: Math.max(78, Math.min(100, 92 + ((index + seed) % 4) - (index % 5 === 0 ? 2 : 0))),
-  }));
-}
-
-function createLogs(name, status) {
-  const primary =
-    status === 'down'
-      ? {
-          message: `${name} probe failed`,
-          details: 'Connection timed out after the configured threshold.',
-        }
-      : status === 'slow'
-        ? {
-            message: `${name} latency above threshold`,
-            details: 'Endpoint returned 200 OK with elevated response time.',
-          }
-        : {
-            message: `${name} probe succeeded`,
-            details: 'Endpoint returned 200 OK within the expected latency window.',
-          };
-
-  return [
-    {
-      id: `${name}-log-1`,
-      type: 'up',
-      message: primary.message,
-      timestamp: 'Just now',
-      details: primary.details,
-    },
-    {
-      id: `${name}-log-2`,
-      type: status,
-      message:
-        status === 'down'
-          ? `${name} incident opened`
-          : `${name} latency evaluation in progress`,
-      timestamp: '7 min ago',
-      details:
-        status === 'down'
-          ? 'Retry threshold reached after consecutive timeouts.'
-          : 'Latency spiked above the warning threshold on the last check.',
-    },
-    {
-      id: `${name}-log-3`,
-      type: 'up',
-      message: 'Next probe scheduled',
-      timestamp: '19 min ago',
-      details: 'Monitoring will continue on the configured interval.',
-    },
-  ];
-}
-
-function createProject({ name, url, interval, email, keepAlive, retryThreshold }) {
-  const normalizedUrl = normalizeUrl(url);
-  const safeName = name?.trim() || extractProjectName(normalizedUrl);
-  const id = slugify(safeName) || `project-${Date.now()}`;
-  const seed = id.length + interval;
-
-  return {
-    id,
-    name: safeName,
-    url: normalizedUrl,
-    status: 'up',
-    responseTime: 142 + seed,
-    lastChecked: 'Just now',
-    interval,
-    email,
-    alertsEnabled: true,
-    keepAlive: Boolean(keepAlive),
-    retryThreshold: Number(retryThreshold) || 2,
-    tags: ['Custom', 'New'],
-    uptimeSeries: createSeries(seed),
-    responseSeries: createSeries(seed + 1),
-    miniSeries: createMiniSeries(seed),
-    logs: createLogs(safeName, 'up'),
-  };
-}
-
+/**
+ * Parse JSON body from request
+ */
 async function parseBody(req) {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
@@ -220,15 +111,9 @@ async function parseBody(req) {
   return JSON.parse(text);
 }
 
-function getRangeSeries(project, range, key) {
-  const lengths = RANGE_LENGTHS[range] ? range : '24h';
-  return project?.[key]?.[lengths] ?? [];
-}
-
-function getProjectById(projects, id) {
-  return projects.find((project) => project.id === id);
-}
-
+/**
+ * Probe a URL to check if it's reachable
+ */
 async function probeUrl(url) {
   const normalized = normalizeUrl(url);
   if (!/^https?:\/\//i.test(normalized)) {
@@ -267,6 +152,37 @@ async function probeUrl(url) {
   }
 }
 
+/**
+ * Create new project object
+ */
+function createProject({ name, url, interval, email, keepAlive, retryThreshold }) {
+  const normalizedUrl = normalizeUrl(url);
+  const safeName = name?.trim() || extractProjectName(normalizedUrl);
+  const id = slugify(safeName) || `project-${Date.now()}`;
+
+  return {
+    id,
+    name: safeName,
+    url: normalizedUrl,
+    status: 'pending',
+    responseTime: null,
+    lastChecked: null,
+    interval: Math.max(1, Number(interval) || 1),
+    email: email || '',
+    alertsEnabled: true,
+    keepAlive: Boolean(keepAlive) || false,
+    retryThreshold: Math.max(1, Number(retryThreshold) || 2),
+    tags: ['Custom'],
+    uptimeSeries: {},
+    responseSeries: {},
+    miniSeries: [],
+    logs: [],
+  };
+}
+
+/**
+ * HTTP Server
+ */
 const server = http.createServer(async (req, res) => {
   if (!req.url || !req.method) {
     sendJson(req, res, 400, { error: 'Bad request' });
@@ -275,9 +191,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'OPTIONS') {
     const cors = buildCorsHeaders(req);
-    res.writeHead(204, {
-      ...cors,
-    });
+    res.writeHead(204, { ...cors });
     res.end();
     return;
   }
@@ -286,17 +200,25 @@ const server = http.createServer(async (req, res) => {
   const { pathname, searchParams } = url;
 
   try {
+    // Health check endpoint
     if (req.method === 'GET' && pathname === '/api/health') {
-      sendJson(req, res, 200, { ok: true, service: 'uptime-scanner-api', timestamp: new Date().toISOString() });
+      sendJson(req, res, 200, {
+        ok: true,
+        service: 'uptime-scanner-api',
+        monitors: getMonitorStatus(),
+        timestamp: new Date().toISOString(),
+      });
       return;
     }
 
+    // Get all projects
     if (req.method === 'GET' && pathname === '/api/projects') {
       const projects = await readProjects();
       sendJson(req, res, 200, { data: projects });
       return;
     }
 
+    // Create new project
     if (req.method === 'POST' && pathname === '/api/projects') {
       const body = await parseBody(req);
       if (!body?.url) {
@@ -305,20 +227,32 @@ const server = http.createServer(async (req, res) => {
       }
 
       const projects = await readProjects();
-      const created = createProject({
+      const newProject = createProject({
         name: body.name,
         url: body.url,
-        interval: Number(body.interval) || 1,
-        email: body.email || '',
+        interval: body.interval,
+        email: body.email,
         keepAlive: body.keepAlive,
         retryThreshold: body.retryThreshold,
       });
-      projects.unshift(created);
+
+      // Check if project with same URL already exists
+      if (projects.some((p) => p.url === newProject.url)) {
+        sendJson(req, res, 400, { error: 'Project with this URL already exists' });
+        return;
+      }
+
+      projects.unshift(newProject);
       await writeProjects(projects);
-      sendJson(req, res, 201, { data: created });
+
+      // Start monitoring this project
+      startMonitor(newProject);
+
+      sendJson(req, res, 201, { data: newProject });
       return;
     }
 
+    // Test URL probe
     if (req.method === 'POST' && pathname === '/api/projects/test') {
       const body = await parseBody(req);
       const result = await probeUrl(body?.url);
@@ -331,58 +265,79 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // Project-specific endpoints
     if (pathname.startsWith('/api/projects/')) {
-      const [, , , id, action] = pathname.split('/');
-      const projects = await readProjects();
-      const project = getProjectById(projects, id);
+      const parts = pathname.split('/').filter(Boolean);
+      const id = parts[2];
+      const action = parts[3];
 
+      if (!id || (action && !['logs', 'incidents'].includes(action))) {
+        sendJson(req, res, 404, { error: 'Not found' });
+        return;
+      }
+
+      const project = await getProjectById(id);
       if (!project) {
         sendJson(req, res, 404, { error: 'Project not found' });
         return;
       }
 
+      // Get single project
       if (req.method === 'GET' && !action) {
         sendJson(req, res, 200, { data: project });
         return;
       }
 
+      // Update project
       if (req.method === 'PATCH' && !action) {
         const body = await parseBody(req);
+
         const updated = {
           ...project,
-          ...body,
-          url: body.url ? normalizeUrl(body.url) : project.url,
-          name: body.name?.trim() || project.name,
-          interval: body.interval ? Number(body.interval) : project.interval,
+          ...(body.name && { name: body.name.trim() }),
+          ...(body.url && { url: normalizeUrl(body.url) }),
+          ...(body.interval !== undefined && { interval: Math.max(1, Number(body.interval)) }),
+          ...(body.email !== undefined && { email: body.email }),
+          ...(body.keepAlive !== undefined && { keepAlive: Boolean(body.keepAlive) }),
+          ...(body.retryThreshold !== undefined && {
+            retryThreshold: Math.max(1, Number(body.retryThreshold)),
+          }),
+          ...(body.alertsEnabled !== undefined && { alertsEnabled: Boolean(body.alertsEnabled) }),
         };
-        const nextProjects = projects.map((item) => (item.id === id ? updated : item));
-        await writeProjects(nextProjects);
+
+        await updateProject(id, updated);
+
+        // If interval changed, restart monitor
+        if (body.interval !== undefined && body.interval !== project.interval) {
+          stopMonitor(id);
+          startMonitor(updated);
+        }
+
         sendJson(req, res, 200, { data: updated });
         return;
       }
 
+      // Delete project
       if (req.method === 'DELETE' && !action) {
-        const nextProjects = projects.filter((item) => item.id !== id);
-        await writeProjects(nextProjects);
+        stopMonitor(id);
+        await deleteProject(id);
         sendJson(req, res, 200, { success: true });
         return;
       }
 
-      if (req.method === 'GET' && action === 'uptime') {
-        const range = searchParams.get('range') || '24h';
-        sendJson(req, res, 200, { data: getRangeSeries(project, range, 'uptimeSeries') });
-        return;
-      }
-
-      if (req.method === 'GET' && action === 'response') {
-        const range = searchParams.get('range') || '24h';
-        sendJson(req, res, 200, { data: getRangeSeries(project, range, 'responseSeries') });
-        return;
-      }
-
+      // Get project logs
       if (req.method === 'GET' && action === 'logs') {
-        const limit = Number(searchParams.get('limit') || 20);
-        sendJson(req, res, 200, { data: project.logs.slice(0, Math.max(1, limit)) });
+        const limit = Number(searchParams.get('limit') || 100);
+        const logs = await getProjectLogs(id, limit);
+        sendJson(req, res, 200, { data: logs });
+        return;
+      }
+
+      // Get project incidents
+      if (req.method === 'GET' && action === 'incidents') {
+        const limit = Number(searchParams.get('limit') || 100);
+        const incidents = await getProjectIncidents(id, limit);
+        sendJson(req, res, 200, { data: incidents });
         return;
       }
     }
@@ -394,6 +349,30 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Uptime Scanner API running on http://localhost:${PORT}`);
-});
+/**
+ * Server startup
+ */
+async function startServer() {
+  try {
+    // Initialize storage
+    await initializeStorage();
+
+    // Load all projects and start monitoring
+    await loadAllMonitors();
+
+    // Setup graceful shutdown
+    setupGracefulShutdown();
+
+    // Start HTTP server
+    server.listen(PORT, () => {
+      console.log(`\n✓ Uptime Scanner API running on http://localhost:${PORT}`);
+      console.log(`📊 Dashboard: http://localhost:5173`);
+      console.log(`🏥 Health check: http://localhost:${PORT}/api/health\n`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
