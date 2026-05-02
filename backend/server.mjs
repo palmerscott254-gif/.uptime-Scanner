@@ -268,10 +268,30 @@ const server = http.createServer(async (req, res) => {
       projects.unshift(newProject);
       await writeProjects(projects);
 
+      const persistedProjects = await readProjects();
+      const persistedProject = persistedProjects.find(
+        (p) => p.id === newProject.id && p.url === newProject.url,
+      );
+      const writeVerified = Boolean(persistedProject);
+
+      if (!writeVerified) {
+        console.warn(
+          `[WRITE] Verification failed for ${newProject.id} in backend/data/projects.json`,
+        );
+      }
+
       // Start monitoring this project
       startMonitor(newProject);
 
-      sendJson(req, res, 201, { data: newProject });
+      sendJson(req, res, 201, {
+        data: newProject,
+        persisted: writeVerified,
+        verification: {
+          file: 'backend/data/projects.json',
+          found: writeVerified,
+          project: persistedProject ?? null,
+        },
+      });
       return;
     }
 
