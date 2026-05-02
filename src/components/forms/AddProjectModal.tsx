@@ -36,6 +36,29 @@ export function AddProjectModal({
     onClose();
   };
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (step === 4) {
+      onSubmit();
+      return;
+    }
+
+    if (step === 1 && validUrl) {
+      nextStep();
+      return;
+    }
+
+    if (step === 2 && testStatus === 'success') {
+      nextStep();
+      return;
+    }
+
+    if (step === 3) {
+      nextStep();
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -43,7 +66,7 @@ export function AddProjectModal({
       description={`Step ${step} of 4 • Configure monitor and alert defaults`}
       onClose={closeModal}
     >
-      <div className="space-y-5">
+      <form className="space-y-5" onSubmit={handleSubmit}>
         {step === 1 ? (
           <>
             <Input
@@ -147,25 +170,29 @@ export function AddProjectModal({
         ) : null}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-          <Button variant="ghost" onClick={closeModal}>
+          <Button type="button" variant="ghost" onClick={closeModal}>
             Cancel
           </Button>
           {step > 1 ? (
-            <Button variant="secondary" onClick={previousStep}>
+            <Button type="button" variant="secondary" onClick={previousStep}>
               Back
             </Button>
           ) : null}
           {step < 4 ? (
-            <Button variant="primary" onClick={nextStep} disabled={(step === 1 && !validUrl) || (step === 2 && testStatus !== 'success')}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={(step === 1 && !validUrl) || (step === 2 && testStatus !== 'success')}
+            >
               Continue
             </Button>
           ) : (
-            <Button variant="primary" onClick={onSubmit}>
+            <Button type="submit" variant="primary">
               Create Monitor
             </Button>
           )}
         </div>
-      </div>
+      </form>
     </Modal>
   );
 }

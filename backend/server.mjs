@@ -198,6 +198,29 @@ const server = http.createServer(async (req, res) => {
 
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   const { pathname, searchParams } = url;
+  // Cache parsed body for logging and reuse (so stream is not consumed twice)
+  let cachedBody = null;
+  try {
+    if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'DELETE') {
+      // parseBody will return {} for empty bodies
+      cachedBody = await parseBody(req);
+    }
+  } catch (err) {
+    console.error('[REQ] Failed to parse request body for logging:', err);
+    cachedBody = null;
+  }
+
+  // Verbose request logging
+  try {
+    const origin = req.headers.origin || req.headers.Origin || '';
+    if (cachedBody) {
+      console.log(`[REQ] ${req.method} ${pathname} from ${origin} body=${JSON.stringify(cachedBody)}`);
+    } else {
+      console.log(`[REQ] ${req.method} ${pathname} from ${origin}`);
+    }
+  } catch (err) {
+    console.log(`[REQ] ${req.method} ${pathname} (logging failed)`);
+  }
 
   try {
     // Health check endpoint
@@ -220,7 +243,7 @@ const server = http.createServer(async (req, res) => {
 
     // Create new project
     if (req.method === 'POST' && pathname === '/api/projects') {
-      const body = await parseBody(req);
+      const body = cachedBody ?? await parseBody(req);
       if (!body?.url) {
         sendJson(req, res, 400, { error: 'url is required' });
         return;
@@ -254,7 +277,7 @@ const server = http.createServer(async (req, res) => {
 
     // Test URL probe
     if (req.method === 'POST' && pathname === '/api/projects/test') {
-      const body = await parseBody(req);
+      const body = cachedBody ?? await parseBody(req);
       const result = await probeUrl(body?.url);
       sendJson(req, res, 200, {
         reachable: result.reachable,
@@ -290,7 +313,7 @@ const server = http.createServer(async (req, res) => {
 
       // Update project
       if (req.method === 'PATCH' && !action) {
-        const body = await parseBody(req);
+        const body = cachedBody ?? await parseBody(req);
 
         const updated = {
           ...project,
