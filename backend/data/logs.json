@@ -1,5 +1,14 @@
 [
   {
+    "id": "log-1777705248948-qeixd",
+    "projectId": "uptime-vercel",
+    "type": "up",
+    "message": "Uptime Vercel is UP",
+    "timestamp": "2026-05-02T07:00:48.948Z",
+    "responseTime": 472,
+    "details": "HTTP 200 - 472ms"
+  },
+  {
     "id": "log-1777705188906-8tth97i",
     "projectId": "uptime-vercel",
     "type": "up",
